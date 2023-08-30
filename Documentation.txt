@@ -1,0 +1,18 @@
+DTSI
+D = Dynamic
+T = Teacher
+S = Student
+I = Interaction
+
+It is 3 tier project.
+
+1.	Data Access Layer - Responsible for Database connection
+ 			and models (EntityFramework)
+
+2.	Business Logigc Layer - Responsible for
+			internal structure for the
+			system especially queries.
+
+3.	Web.UI	-	Responsible for the user
+			interface of the project and
+			Data Transfer Objects (DTO).
