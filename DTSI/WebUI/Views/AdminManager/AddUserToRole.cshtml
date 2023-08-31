@@ -1,0 +1,57 @@
+﻿@model WebUI.ViewModels.UserRoleViewModel
+@{
+    ViewData["Title"] = "Add User In Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="row justify-content-center">
+    <div class="col mt-5">
+        <div class="card login-logout-card">
+            <div class="card-header">
+                <h3 class="card-title text-primary"> Add User To In Role</h3>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-12 my-4">
+                        <form method="post">
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary()
+
+
+
+                            <div class="form-floating my-2">
+                                <select asp-for="Email" class="form-control" asp-items="@(new SelectList(ViewBag.AllUsers, "Email", "Email"))">
+                                    <option disabled>Select User Email Address ...</option>
+                                </select>
+                                <label asp-for="Email"></label>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            @*@Html.DropDownListFor(x => x.RoleId, new SelectList(ViewBag.Roles, "Id", "RoleName"), "Select", new { @class = "form-control" })*@
+
+                            <div class="form-floating my-2">
+                                <select asp-for="RoleId" class="form-control" asp-items="@(new SelectList(ViewBag.Roles, "Id", "RoleName"))">
+                                    <option disabled>Select Role ...</option>
+                                </select>
+                                <label asp-for="RoleId"></label>
+                                <span asp-validation-for="RoleId" class="text-danger"></span>
+                            </div>
+
+
+
+                            <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+
+                                <input type="submit" value="Complete" class="btn btn-primary fw-bold px-3 fw-bolder" />
+                            </div>
+
+
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

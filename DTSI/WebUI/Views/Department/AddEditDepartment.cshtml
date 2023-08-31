@@ -1,0 +1,83 @@
+﻿@model WebUI.DTOs.DepartmentViewModel
+
+<form id="frmDept">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+
+
+    <div class="form-floating my-2">
+        <input asp-for="Name" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Name"></label>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+     <div class="form-floating my-2">
+        <input asp-for="Code" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Code"></label>
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating my-2">
+        <input asp-for="HODName" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="HODName"></label>
+        <span asp-validation-for="HODName" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating my-2">
+        <input asp-for="HODEmail" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="HODEmail"></label>
+        <span asp-validation-for="HODEmail" class="text-danger"></span>
+    </div>
+
+    <div style="text-align: center;" id="loaderDiv1">
+        <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+    </div>
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate">
+            @if (!String.IsNullOrEmpty(Model.Id))
+            {
+                <span>Update</span>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </a>
+    </div>
+</form>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#loaderDiv1").hide();
+
+        $("#btnSaveUpdate").click(function () {
+
+            $("#loaderDiv1").show();
+
+            var frmData = $("#frmDept").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/Department/Index",
+                data: data,
+                success: function (result) {
+                    $("#loaderDiv").hide();
+                    $("#AddEditModal").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+                    
+                        window.location.href = "/Department/Index";
+                   
+                }
+            })
+        })
+
+    })
+</script>
+
+

@@ -1,0 +1,107 @@
+﻿@using DataAccessLayer.Enum
+@model WebUI.DTOs.CourseAllocationVm
+
+
+@{
+    ViewData["Title"] = "New Department Course Allocation";
+}
+
+
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Department Course Allocation</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Lecturer(s) to Course</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-9 mt-5">
+
+        <div class="card login-logout-card">
+            <div class="card-header">
+                <h3 class="card-title">Please fill the form with valid values!</h3>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-12 my-4">
+                        <form method="post" asp-controller="CourseAllocation" asp-action="AllocateCourse">
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary()
+
+                            <div class="form-floating my-2">
+                                <select asp-for="Session" class="form-control" asp-items="@(new SelectList(ViewBag.Sessions, "Title", "Title"))">
+                                    <option disabled selected>Select Academic Session ...</option>
+                                </select>
+                                <label asp-for="Session"></label>
+                                <span asp-validation-for="Session" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-floating my-2">
+                                <select asp-for="Semester" class="form-control" asp-items="Html.GetEnumSelectList<SemesterEnum>()">
+                                    <option disabled selected>Select Semester...</option>
+                                </select>
+                                <label asp-for="Semester"></label>
+                                <span asp-validation-for="Semester" class="text-danger"></span>
+
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <select asp-for="CourseID" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Code"))">
+                                    <option disabled selected>Select Course...</option>
+                                </select>
+                                <label asp-for="CourseID"></label>
+                                <span asp-validation-for="CourseID" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <select asp-for="LecturerID" class="form-control" asp-items="@(new SelectList(ViewBag.Employees, "Id", "Name"))">
+                                    <option disabled selected>Select Lecturer...</option>
+                                </select>
+                                <label asp-for="LecturerID"></label>
+                                <span asp-validation-for="LecturerID" class="text-danger"></span>
+                            </div>
+
+
+
+                            <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+                                <div id="loaderDiv1">
+                                    <p class="text-info text-center">Please kindly click once and wait until you get a response after your upload finished processing!</p>
+                                    <img src="~/Images/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+                                </div>
+                                <input type="submit" id="btnSave" value="Submit" class="btn btn-primary fw-bold px-3 fw-bolder" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#loaderDiv1").hide();
+
+
+            $("#btnReset").click(function () {
+                $("#loaderDiv1").show();
+            })
+
+
+
+        })
+    </script>
+}

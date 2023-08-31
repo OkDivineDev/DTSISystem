@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .login-logout-card a.nav-link {
+        font-size: 1rem;
+        color: #495057;
+        text-align: center;
+        padding: 1rem;
+    }
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Sign-In / Sign-Up</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-sm-12 mt-5">
+        <div class="card login-logout-card">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link text-primary text-uppercase shadow btn" id="login" asp-controller="AdminManager" asp-action="Roles">Roles</a>
+                    </li>
+                    <li class="nav-item tabItem">
+                        <a class="nav-link text-primary text-uppercase shadow btn" id="register" asp-controller="AdminManager" asp-action="CreateRole">New Role</a>
+                    </li>
+                    <li class="nav-item tabItem">
+                        <a class="nav-link text-primary text-uppercase shadow btn" id="register" asp-controller="AdminManager" asp-action="AddUserToRole">Assign to Role</a>
+                    </li>
+                    <li class="nav-item tabItem">
+                        <a class="nav-link text-primary text-uppercase shadow btn" id="register" asp-controller="AdminManager" asp-action="UserRole">Users in Role</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-10 my-2">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    @await RenderSectionAsync("Scripts", required: false)
+}

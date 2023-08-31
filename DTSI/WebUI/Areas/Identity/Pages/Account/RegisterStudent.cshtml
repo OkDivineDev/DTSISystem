@@ -1,0 +1,77 @@
+﻿@page
+@model StudentRegisterModel
+@{
+    ViewData["Title"] = "Student Registration";
+    Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml";
+
+    var genders = TempData["genders"] as List<WebUI.DTOs.XGender>;
+    var levels = TempData["levels"] as List<WebUI.DTOs.XLevel>;
+}
+
+<form id="registerStudentForm" method="post" enctype="multipart/form-data">
+    @Html.HiddenFor(x => x.StudentInput.RegNo)
+    @Html.HiddenFor(x => x.StudentInput.JambRegNo)
+    @Html.HiddenFor(x => x.StudentInput.EntryMode)
+    @Html.HiddenFor(x => x.StudentInput.EntryYear)
+    @Html.HiddenFor(x => x.StudentInput.Email)
+    @Html.HiddenFor(x => x.StudentInput.DepartmentID)
+    @Html.HiddenFor(x => x.StudentInput.GraduationYear)
+
+
+
+    <h2>Create a new Student account.</h2>
+    <hr />
+    <h3>User Account Details</h3>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-floating my-2">
+        <p>Note: The email address <b>(@Model.StudentInput.Email)</b> you submitted to your school during application is the one associated with this account.</p>
+    </div>
+    <div class="form-floating my-2">
+        <input asp-for="StudentInput.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+        <label asp-for="StudentInput.Password"></label>
+        <span asp-validation-for="StudentInput.Password" class="text-danger"></span>
+    </div>
+    <div class="form-floating my-2">
+        <input asp-for="StudentInput.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+        <label asp-for="StudentInput.ConfirmPassword"></label>
+        <span asp-validation-for="StudentInput.ConfirmPassword" class="text-danger"></span>
+    </div>
+
+
+
+    <hr />
+    <h3>Student Profile Details</h3>
+
+    <div class="form-floating my-2">
+        <input asp-for="StudentInput.Name" class="form-control" autocomplete="username" aria-required="true" />
+        <label asp-for="StudentInput.Name"></label>
+        <span asp-validation-for="StudentInput.Name" class="text-danger"></span>
+    </div>
+    <div class="form-floating my-2">
+        <select asp-for="StudentInput.Gender" class="form-control" asp-items="@(new SelectList(genders, "Gender", "Gender"))">
+            <option disabled>Select Gender ...</option>
+        </select>
+        <label asp-for="StudentInput.Gender"></label>
+        <span asp-validation-for="StudentInput.Gender" class="text-danger"></span>
+    </div>
+    <div class="form-floating my-2">
+        <select asp-for="StudentInput.Level" class="form-control" asp-items="@(new SelectList(levels, "Level", "Level"))">
+            <option disabled>Select Level ...</option>
+        </select>
+        <label asp-for="StudentInput.Level"></label>
+        <span asp-validation-for="StudentInput.Level" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating my-2">
+        <input asp-for="StudentInput.PassportFile" type="file" class="form-control" aria-describedby="UploadFile">
+        <label asp-for="StudentInput.PassportFile"></label>
+        <span asp-validation-for="StudentInput.PassportFile" class="text-danger"></span>
+    </div>
+
+
+    <button id="registerStudentSubmit" type="submit" class="my-2 w-100 btn btn-lg btn-primary">Register</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

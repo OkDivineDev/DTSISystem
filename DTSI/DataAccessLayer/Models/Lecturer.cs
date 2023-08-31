@@ -15,10 +15,15 @@ namespace DataAccessLayer.Models
         [DataType(DataType.EmailAddress, ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
 
-        
 
 
-       public virtual ICollection<CourseAllocation>? CourseAllocations { set; get; }
+        [Display(Name = "Department")]
+        public string DepartmentID { get; set; }
+
+
+
+        public virtual ICollection<Department> Departments { get; set; }
+        public virtual ICollection<CourseAllocation>? CourseAllocations { set; get; }
        public virtual ICollection<Assignment>? Assignments { set; get; }
     }
 }

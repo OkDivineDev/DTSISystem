@@ -1,0 +1,261 @@
+﻿@{
+    ViewData["Title"] = "Department Lecturer";
+}
+
+<style>
+
+    #emps_filter {
+        float: right;
+        margin-bottom: 20px;
+    }
+
+  
+    .dt-buttons {
+        float: left;
+        margin-bottom: 20px;
+    }
+
+        .dt-buttons .dt-button {
+            background-color: black;
+            color: white;
+        }
+
+
+    #emps {
+        background: #fff;
+        padding: 15px;
+        box-shadow: 1px 3px 5px #aaa;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Department Lecturer</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Lecturer</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container ">
+        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+            <h5 class="fw-bold text-success text-uppercase">Department</h5>
+            <h1 class="mb-0">Lecturer Manager</h1>
+        </div>
+
+        <div class="row g-5">
+            <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
+                {
+                    <a asp-controller="EmployeeManager" asp-action="UploadEmployee" class="btn btn-primary fw-bold px-3 fw-bolder mb-3">
+                        <i class="fa fa-upload"></i>
+                        Upload Employee
+                    </a>
+                }
+                <div class="table-responsive">
+                    @if (ViewBag.Count > 0)
+                    {
+
+                        <table class="table table-hover" id="emps" style="width:100%">
+                            <thead class="bg-primary text-light">
+                                <tr class="mt-2">
+                                    <th>S/N</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
+                                    {
+                                        <th class="text-center">Operations</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int tot = ViewBag.Count;
+                                    int i = 1;
+                                    foreach (var item in ViewBag.Lecturers as List<WebUI.DTOs.LecturerVm>)
+                                    {
+                                        <tr id="row_@item.Id">
+                                            <td>
+                                                @if (i <= tot)
+                                                {
+                                                    @i
+                                                }
+                                            </td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.DepartmentID</td>
+
+                                            @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
+                                            {
+                                                <td class="text-center">
+
+                                                    <a class="btn btn-primary ms-2"
+                                           onclick="AddEdit('@item.Id')">
+                                                        Edit
+                                                    </a>
+
+                                                    <a class="btn btn-danger ms-2"
+                                           onclick="ConfirmDeleteRecord('@item.Id')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+
+                                                </td>
+                                            }
+                                        </tr>
+                                        i++;
+                                    }
+                                }
+                            </tbody>
+                            <tfoot class="bg-primary text-light">
+                                <tr>
+                                    @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
+                                    {
+                                        <td colspan="5" class="text-center">
+                                            <b>DEPARTMENT LECTURERS - DTSI</b>
+                                        </td>
+                                    }else{
+                                        <td colspan="4" class="text-center">
+                                            <b>DEPARTMENT EMPLOYEES - DTSI</b>
+                                        </td>
+                                    }
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+
+                    }
+                    else
+                    {
+                        <div class="alert">
+                            <div class="alert alert-info alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <strong class="text-info text-center text-capitalize">no data found</strong>
+                            </div>
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="EditModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Edit Employee Record
+                </h2>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+            <div class="modal-footer">
+                <div style="text-align: center; display: none;" id="loaderDiv">
+                    <img src="~/img/load.gif" width="50" height="50" class="img-circle img-thumbnail" />
+                </div>
+                <a href="#" class="btn btn-danger" id="btnReset">Reset</a>
+                <a href="#" class="btn btn-primary" id="btnCancle">Cancle</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete Record</h1>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+
+            <div class="modal-body">
+                <form action="/EmployeeManager/DeleteLecturer" method="get">
+                    <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
+                    <input type="hidden" name="ID" id="ID" />
+                    <div class="d-grid gap-2 col-md-12 mx-auto">
+                        <input type="submit" class="btn btn-danger" value="Yes Delete" />
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+            $("#emps").DataTable({
+                dom: 'Bfrtip',
+                buttons: ['copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+
+
+
+            $("#btnReset").click(function () {
+                $("#Name").val("");
+                $("#SchoolID").val("");
+                $("#HODUserId").val("");
+            })
+
+            $("#btnCancle").click(function () {
+                $("#EditModal").modal("hide");
+                window.location.href = "/LecturerManager/Index";
+
+            })
+
+
+        })
+
+
+
+        var AddEdit = function (id) {
+            $("#loaderDiv").show();
+
+            var url = "/LecturerManager/EditLecturer?ID=" + id; //USED TO SEARCH ENTITY WITH ID
+
+            $("#modalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                $("#loaderDiv").hide();
+                $("#EditModal").modal("show");
+            })
+        }
+
+        var ConfirmDeleteRecord = function (id) {
+            $("#ID").val(id);
+            $("#DeleteModal").modal("show");
+        }
+
+    </script>
+
+}

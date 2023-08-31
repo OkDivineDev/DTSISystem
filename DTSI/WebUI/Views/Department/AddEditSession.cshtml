@@ -1,0 +1,67 @@
+﻿@model WebUI.DTOs.AcademicSessionVM
+
+<form id="frmAcaSession">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+
+
+    <div class="form-floating my-2">
+        <input asp-for="Title" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Title"></label>
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+  
+
+    <div style="text-align: center;" id="loaderDiv1">
+        <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+    </div>
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate">
+            @if (!String.IsNullOrEmpty(Model.Id))
+            {
+                <span>Update</span>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </a>
+    </div>
+</form>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#loaderDiv1").hide();
+
+        $("#btnSaveUpdate").click(function () {
+
+            $("#loaderDiv1").show();
+
+            var frmData = $("#frmAcaSession").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/Department/SaveSession",
+                data: data,
+                success: function (result) {
+                    $("#loaderDiv").hide();
+                    $("#AddEditSesionModal").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+                    
+                        window.location.href = "/Department/Index";
+                   
+                }
+            })
+        })
+
+    })
+</script>
+
+

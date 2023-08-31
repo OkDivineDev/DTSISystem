@@ -1,0 +1,51 @@
+﻿@model WebUI.ViewModels.RoleViewModel
+
+@{
+    ViewData["Title"] = "Executive Secretary";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+
+
+
+
+<div class="row justify-content-center">
+    <div class="col mt-5">
+        <div class="card login-logout-card">
+            <div class="card-header">
+                <h3 class="my-2">
+                    Add New Role
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-12 my-4">
+                        <form  method="post" asp-controller="AdminManager" asp-action="CreateRole">
+                            @Html.AntiForgeryToken()
+
+                            @Html.ValidationSummary()
+                            @Html.HiddenFor(x => x.Id)
+
+                            <div class="form-floating my-2">
+                                <input asp-for="RoleName" class="form-control" autocomplete="on" aria-required="true" />
+                                <label asp-for="RoleName"></label>
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+
+                            
+
+                            <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+
+                                <input type="submit" value="Submit" class="btn btn-primary fw-bold px-3 fw-bolder" />
+                            </div>
+
+
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

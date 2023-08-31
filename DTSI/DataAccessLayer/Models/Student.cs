@@ -27,6 +27,12 @@ namespace DataAccessLayer.Models
         public string Passport { get; set; }
         public string Gender { get; set; }
 
-       public virtual Assignment Assignment { get; set; }
+        [Display(Name = "Department")]
+        [ForeignKey("Department")]
+        public string DepartmentID { get; set; }
+
+
+        public virtual Assignment Assignment { get; set; }
+        public virtual Department Department { get; set; }
     }
 }
