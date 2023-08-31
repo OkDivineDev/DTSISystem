@@ -18,7 +18,8 @@ namespace DataAccessLayer.Models
         public string Session { get; set; }
 
         public bool Approved { get; set; }
-
+        
+        public virtual Department Department { get; set; }
         public virtual Lecturer Lecturer { get; set; }
         public virtual CourseBank Course { get; set; }
 

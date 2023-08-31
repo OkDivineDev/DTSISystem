@@ -1,0 +1,106 @@
+﻿@model IEnumerable<WebUI.ViewModels.UsersInRoles>
+@{
+    ViewData["Title"] = "Users Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<style>
+
+    #usersRoles_filter {
+        margin-bottom: 20px;
+    }
+</style>
+
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container py-3 position-relative p-0">
+        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto" style="max-width: 600px;">
+            <h2> List of users of the system and their various roles.</h2>
+        </div>
+
+        <div class="row">
+            <div class="wow slideInUp" data-wow-delay="0.3s">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="usersRoles" style="width:100%">
+                        <thead class="bg-success text-light">
+                            <tr class="mt-2">
+                                <th>S/N</th>
+                                <th>User Email</th>
+                                <th>Role</th>
+
+
+                                <th>Commands</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int tot = Model.Count();
+                                int i = 1;
+                                foreach (var user_role in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (i <= tot)
+                                            {
+                                                @i
+                                            }
+                                        </td>
+                                        <td>
+                                            @user_role.Email
+                                        </td>
+                                        <td>
+                                            @user_role.RoleName
+                                        </td>
+
+                                        <td class="d-flex">
+                                            <a class="btn btn-danger ms-3"
+                                       asp-action="RemoveFromRole"
+                                       asp-controller="AdminManager"
+                                       asp-route-RoleName="@user_role.RoleName"
+                                       asp-route-Email="@user_role.Email"> <i class="fa fa-times"></i> </a>
+                                        </td>
+
+                                    </tr>
+                                    i++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+
+@section scripts{
+    <script>
+
+
+        $(document).ready(function () {
+
+            $("#usersRoles").DataTable({
+
+            });
+
+
+
+
+
+        })
+
+
+    </script>
+        }
+
+

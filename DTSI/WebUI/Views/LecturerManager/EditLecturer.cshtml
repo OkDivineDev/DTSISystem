@@ -1,0 +1,60 @@
+﻿@model WebUI.DTOs.LecturerVm
+
+<form id="frmEmp">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.UserId)
+
+
+    <div class="form-floating my-2">
+        <input asp-for="Name" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Name"></label>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+
+    <div style="text-align: center;" id="loaderDiv1">
+        <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+    </div>
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate">
+            <span>Update</span>
+        </a>
+    </div>
+</form>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#loaderDiv1").hide();
+
+        $("#btnSaveUpdate").click(function () {
+
+            $("#loaderDiv1").show();
+
+            var frmData = $("#frmEmp").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/EmployeeManager/Index",
+                data: data,
+                success: function (result) {
+                    $("#loaderDiv").hide();
+                    $("#EditModal").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+
+                    window.location.href = "/EmployeeManager/Index";
+
+                }
+            })
+        })
+
+    })
+</script>
+
+

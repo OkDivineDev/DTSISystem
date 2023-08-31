@@ -12,6 +12,8 @@ namespace DataAccessLayer.Models
         public string EntryMode { get; set; }
         public string JambRegNo { get; set; }
         public string Email { get; set; }
-     
+        [ForeignKey("Department")]
+        public string DepartmentId { get; set; }
+        public virtual Department Department { get; set; }
     }
 }

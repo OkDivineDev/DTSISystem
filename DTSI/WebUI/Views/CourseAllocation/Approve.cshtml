@@ -1,0 +1,239 @@
+﻿@using DataAccessLayer.Enum
+@model WebUI.DTOs.CourseAllocationApprovalVm
+
+@{
+    ViewData["Title"] = "Approve Course Allocation";
+}
+
+<style>
+
+    .dt-buttons {
+        float: left;
+        margin-bottom: 20px;
+    }
+
+        .dt-buttons .dt-button {
+            background-color: black;
+            color: white;
+        }
+
+    #csAlloca_filter {
+        margin-bottom: 20px;
+        float: right;
+    }
+
+    #csAlloca {
+        background: #fff;
+        padding: 15px;
+        box-shadow: 1px 3px 5px #aaa;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Department Course Allocation</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Allocation Approval</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container ">
+        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+            <h5 class="fw-bold text-success text-uppercase">Course Allocation</h5>
+            <h1 class="mb-0">Load By Session and Semester</h1>
+        </div>
+
+        <div class="row g-5">
+            <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                <div class="row justify-content-center">
+                    <div class="col-12 my-4">
+                        <form method="get" asp-controller="CourseAllocation" asp-action="Approve">
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary()
+
+                            <div class="form-floating my-2">
+                                <select asp-for="Session" class="form-control" asp-items="@(new SelectList(ViewBag.Sessions, "Title", "Title"))">
+                                    <option disabled>Select Academic Session ...</option>
+                                </select>
+                                <label asp-for="Session"></label>
+                                <span asp-validation-for="Session" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="form-floating my-2">
+                                <select asp-for="Semester" class="form-control" asp-items="Html.GetEnumSelectList<SemesterEnum>()">
+                                    <option disabled>Select Semester...</option>
+                                </select>
+                                <label asp-for="Semester"></label>
+                                <span asp-validation-for="Semester" class="text-danger"></span>
+
+                            </div>
+
+
+                            <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+                                <div id="loaderDiv1">
+                                    <p class="text-info text-center">Please kindly click once and wait until you get a response after your upload finished processing!</p>
+                                    <img src="~/Images/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+                                </div>
+                                <input type="submit" id="btnSave" value="Submit" class="btn btn-primary fw-bold px-3 fw-bolder" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+
+                <div class="table-responsive">
+                    @if (ViewBag.Count > 0)
+                    {
+
+                        <table class="table table-hover" id="csAlloca" style="width:100%">
+                            <thead class="bg-primary text-light">
+                                <tr class="mt-2">
+                                    <th>S/N</th>
+                                    <th>Course</th>
+                                    <th>Lecturer</th>
+                                    <th>Session</th>
+                                    <th>Semester</th>
+
+                                    <th class="text-center">Operations</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int tot = ViewBag.Count;
+                                    int i = 1;
+                                    foreach (var item in ViewBag.CourseAllocationToApprove as List<WebUI.DTOs.CourseAllocationVm>)
+                                    {
+                                        <tr id="row_@item.Id">
+                                            <td>
+                                                @if (i <= tot)
+                                                {
+                                                    @i
+                                                }
+                                            </td>
+                                            <td>@item.CourseID</td>
+                                            <td>@item.LecturerID</td>
+                                            <td>@item.Session</td>
+                                            <td>@item.Semester</td>
+
+                                            <td class="text-center">
+
+                                                <a class="btn btn-danger ms-2"
+                                           onclick="ConfirmDeleteRecord('@item.Id')">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }
+                                }
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6">
+                                        <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+
+                                            <p class="text-center fs-3">
+                                                By clicking Approve button all the items on the
+                                                table will be approved!
+                                            </p>
+                                            <div class="d-grid gap-2 col-md-8 mx-auto">
+                                                <a asp-action="ApproveNow" asp-controller="CourseAllocation" class="btn btn-outline-danger fw-bold px-3 fw-bolder mb-3">Approve Allocation</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+
+                    }
+                    else
+                    {
+                        <div class="alert">
+                            <div class="alert alert-info alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <strong class="text-info text-center text-capitalize">NO RECORD FOUND</strong>
+                            </div>
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete Record</h1>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+
+            <div class="modal-body">
+                <form action="/CourseAllocation/RemoveCourseAllocationApproval" method="get">
+                    <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
+                    <input type="hidden" name="ID" id="ID" />
+                    <div class="d-grid gap-2 col-md-12 mx-auto">
+                        <input type="submit" class="btn btn-danger" value="Yes Delete" />
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#loaderDiv1").hide();
+            $("#csAlloca").DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+
+
+
+        })
+
+
+
+        var ConfirmDeleteRecord = function (id) {
+            $("#ID").val(id);
+            $("#DeleteModal").modal("show");
+        }
+
+    </script>
+
+}

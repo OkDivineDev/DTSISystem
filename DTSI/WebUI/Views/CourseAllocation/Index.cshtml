@@ -1,0 +1,279 @@
+﻿@model WebUI.DTOs.SearchAllocationVm
+
+@{
+    ViewData["Title"] = "Department Course Allocation";
+}
+
+<style>
+
+    .dt-buttons{
+        float:left;
+        margin-bottom: 20px;
+    }
+
+    .dt-buttons .dt-button{
+         background-color:black;
+         color:white;
+    }
+     #csAlloc_filter {
+         margin-bottom: 20px;
+         float:right;
+     }
+
+     #csAlloc{
+         background:#fff;
+         padding: 15px;
+         box-shadow: 1px 3px 5px #aaa;
+         border-radius: 5px;
+     }
+
+
+
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Department Course Allocation</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Lecturer(s) to Course</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container ">
+        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+            <h5 class="fw-bold text-success text-uppercase">Department Course Allocation</h5>
+            <h1 class="mb-0">List of Courses and Lecturers Assigned</h1>
+        </div>
+
+        <div class="row g-5">
+
+
+            <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                <div class="row justify-content-center">
+                    <div class="col-12 my-4">
+                        <form method="get" asp-controller="CourseAllocation" asp-action="Index">
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary()
+
+                            <div class="form-floating my-2">
+                                <select asp-for="_Session" class="form-control" asp-items="@(new SelectList(ViewBag.Sessions, "Title", "Title"))">
+                                    <option disabled selected>Select Academic Session ...</option>
+                                </select>
+                                <label asp-for="_Session"></label>
+                                <span asp-validation-for="_Session" class="text-danger"></span>
+                            </div>
+
+
+                            <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+                                <div id="loaderDiv1" class="text-center">
+                                    <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+                                </div>
+                                <input type="submit" id="btnSearch" value="Submit" class="btn btn-primary fw-bold px-3 fw-bolder" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                @if (User.IsInRole("HOD") && ViewBag.IsHod ==true)
+                {
+                    <div class="row">
+
+
+                        <div class="col-md-4 col-sm-6">
+                            <a asp-controller="CourseAllocation" asp-action="AllocateCourse" class="btn btn-outline-primary fw-bold px-3 fw-bolder mb-3">
+                                Allocate Course
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+
+                            <a asp-controller="CourseAllocation" asp-action="UploadCourseAllocation" class="btn btn-outline-primary fw-bold px-3 fw-bolder mb-3">
+                                <i class="fa fa-upload"></i>
+                                Upload Course Allocation
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+
+                            <a asp-controller="CourseAllocation" asp-action="Approve" class="btn btn-outline-primary fw-bold px-3 fw-bolder mb-3">
+                                Approve  Allocations
+                            </a>
+                        </div>
+                    </div>
+
+                }
+                <div class="table-responsive">
+                    @if (ViewBag.Count > 0)
+                    {
+
+                        <table class="table table-hover" id="csAlloc" style="width:100%">
+                            <thead class="table-dark text-light">
+                                <tr class="mt-2">
+                                    <th>S/N</th>
+                                    <th>Department</th>
+                                    <th>Lecturer</th>
+                                    <th>Course</th>
+                                    <th>Session</th>
+                                    <th>Semester</th>
+                                    @if (User.IsInRole("HOD") && ViewBag.IsHod ==true)
+                                    {
+                                        <th class="text-center">Operation</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int tot = ViewBag.Count;
+                                    int i = 1;
+                                    foreach (var item in ViewBag.CourseAllocations as List<WebUI.DTOs.CourseAllocationVm>)
+                                    {
+                                                <tr id="row_@item.Id">
+                                                    <td>
+                                                        @if (i <= tot)
+                                                {
+                                                            @i
+                                                }
+                                                    </td>
+                                                    <td>@item.DepartmentID</td>
+                                                    <td>@item.LecturerID</td>
+                                                    <td>@item.CourseID</td>
+                                                    <td>@item.Session</td>
+                                                    <td>@item.Semester</td>
+                                            @if (User.IsInRole("HOD") && ViewBag.IsHod ==true && !item.Approved)
+                                            {
+                                                        <td class="text-center">
+                                                            <a class="btn btn-danger ms-2"
+                                       asp-action="AllocateCourse"
+                                       asp-controller="CourseAllocation"
+                                       asp-route-ID="@item.Id">
+                                                                Edit
+                                                            </a>
+                                                            <a class="btn btn-danger ms-2"
+                                                   onclick="ConfirmDeleteRecord('@item.Id')">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        </td>
+
+                                            }
+                                            else if (User.IsInRole("HOD") && ViewBag.IsHod ==true)
+                                            {
+                                                        <td class="text-danger">IMMUTABLE</td>
+                                            }
+                                                </tr>
+                                        i++;
+                                    }
+                                }
+                            </tbody>
+                            <tfoot class="table-dark text-light">
+                                <tr class="mt-2">
+                                    <th>S/N</th>
+                                    <th>Department</th>
+                                    <th>Lecturer</th>
+                                    <th>Course</th>
+                                    <th>Session</th>
+                                    <th>Semester</th>
+                                    @if (User.IsInRole("HOD") && ViewBag.IsHod ==true)
+                                    {
+                                        <th class="text-center">Operation</th>
+                                    }
+                                </tr>
+                            </tfoot>
+                        </table>
+
+
+                    }
+                    else
+                    {
+                        <div class="alert">
+                            <div class="alert alert-info alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <strong class="text-info text-center text-capitalize">no data found</strong>
+                            </div>
+                        </div>
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete Record</h1>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+
+            <div class="modal-body">
+                <form action="/CourseAllocation/RemoveCourseAllocation" method="get">
+                    <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
+                    <input type="hidden" name="ID" id="ID" />
+                    <div class="d-grid gap-2 col-md-12 mx-auto">
+                        <input type="submit" class="btn btn-danger" value="Yes Delete" />
+                    </div>
+                </form>
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#loaderDiv1").hide();
+            $("#_Session").attr('disabled', 'false');
+
+            $('#csAlloc').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+
+
+            $("#btnSearch").click(function () {
+                $("#loaderDiv1").show();
+                $("#_Session").attr('disabled', 'true');
+            });
+
+        });
+
+
+        var ConfirmDeleteRecord = function (id) {
+            $("#ID").val(id);
+            $("#DeleteModal").modal("show");
+        }
+    </script>
+
+}
