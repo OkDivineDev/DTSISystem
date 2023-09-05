@@ -73,7 +73,7 @@ namespace WebUI.Controllers
 
                 //string userId = string.Empty;
 
-                if (User.IsInRole("SchoolOwner") || User.IsInRole("Admin"))
+                if (User.IsInRole("Admin"))
                 {
                     var departments = await repoDept.GetAll();
                     ViewBag.Count = departments.Count();

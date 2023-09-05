@@ -50,7 +50,7 @@ namespace WebUI.Controllers
                 string? sessionEmpId = context.HttpContext.Session.GetString("SessionEmpId") ?? null;
 
 
-                bool isHod = await IsHod(sessionEmpId, sessionDeptId);
+                bool isHod = await IsHod(sessionEmpId, sessionDeptId) == true;
                 ViewBag.IsHod = isHod;
 
 
@@ -133,7 +133,7 @@ namespace WebUI.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var dbObj = await repoCourse.GetByIdAsync(o => o.Code == model.Code && o.Unit == model.Unit || o.Id == model.ID);
+                    var dbObj = await repoCourse.GetByIdAsync(o => o.Code == model.Code  || o.Id == model.ID);
 
                     if (dbObj != null)
                     {
@@ -145,6 +145,7 @@ namespace WebUI.Controllers
                     }
                     else
                     {
+                        
                         CourseBank objCo = new()
                         {
                             Code = model.Code,

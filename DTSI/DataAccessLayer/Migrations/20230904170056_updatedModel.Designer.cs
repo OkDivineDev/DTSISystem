@@ -4,6 +4,7 @@ using DataAccessLayer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(DatabaseEntity))]
-    partial class DatabaseEntityModelSnapshot : ModelSnapshot
+    [Migration("20230904170056_updatedModel")]
+    partial class updatedModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -328,6 +330,10 @@ namespace DataAccessLayer.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("nvarchar(13)");
 
+                    b.Property<string>("AssignmentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("DepartmentID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -363,41 +369,15 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RegNo");
 
+                    b.HasIndex("AssignmentId");
+
                     b.HasIndex("DepartmentID");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("DataAccessLayer.Models.StudentAssignment", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("AssignmentID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("StudentRegNo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(13)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AssignmentID");
-
-                    b.HasIndex("StudentRegNo");
-
-                    b.ToTable("StudentAssignments");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.UserInterface", b =>
@@ -409,9 +389,14 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StudentRegNo")
+                        .HasColumnType("nvarchar(13)");
+
                     b.HasKey("UserId");
 
-                    b.ToTable("AppUsers");
+                    b.HasIndex("StudentRegNo");
+
+                    b.ToTable("UserInterfaces");
                 });
 
             modelBuilder.Entity("DepartmentLecturer", b =>
@@ -525,38 +510,28 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Models.Student", b =>
                 {
+                    b.HasOne("DataAccessLayer.Models.Assignment", "Assignment")
+                        .WithMany("Students")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DataAccessLayer.Models.Department", "Department")
                         .WithMany("Students")
                         .HasForeignKey("DepartmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataAccessLayer.Models.UserInterface", "User")
-                        .WithOne("Student")
-                        .HasForeignKey("DataAccessLayer.Models.Student", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Assignment");
 
                     b.Navigation("Department");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Models.StudentAssignment", b =>
+            modelBuilder.Entity("DataAccessLayer.Models.UserInterface", b =>
                 {
-                    b.HasOne("DataAccessLayer.Models.Assignment", "Assignment")
-                        .WithMany("StudentAssignments")
-                        .HasForeignKey("AssignmentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("DataAccessLayer.Models.Student", "Student")
-                        .WithMany("StudentAssignments")
-                        .HasForeignKey("StudentRegNo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Assignment");
+                        .WithMany()
+                        .HasForeignKey("StudentRegNo");
 
                     b.Navigation("Student");
                 });
@@ -578,7 +553,7 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("DataAccessLayer.Models.Assignment", b =>
                 {
-                    b.Navigation("StudentAssignments");
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.CourseBank", b =>
@@ -606,16 +581,9 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("CourseAllocations");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Models.Student", b =>
-                {
-                    b.Navigation("StudentAssignments");
-                });
-
             modelBuilder.Entity("DataAccessLayer.Models.UserInterface", b =>
                 {
                     b.Navigation("Lecturers");
-
-                    b.Navigation("Student");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,12 +5,14 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using WebUI.DTOs;
 
 namespace WebUI.Areas.Identity.Pages.Account
 {
@@ -19,11 +21,16 @@ namespace WebUI.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _sender;
+        private readonly string v = "Msg";
+        private readonly INotyfService notyfService;
+        private readonly PopNotification popNotification;
 
-        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, INotyfService _notyfService, IEmailSender sender)
         {
             _userManager = userManager;
             _sender = sender;
+            notyfService = _notyfService;
+            popNotification = new PopNotification(notyfService);
         }
 
         /// <summary>
@@ -51,7 +58,7 @@ namespace WebUI.Areas.Identity.Pages.Account
             {
                 return RedirectToPage("/Index");
             }
-            returnUrl = returnUrl ?? Url.Content("~/");
+            _ = returnUrl ?? Url.Content("~/");
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -74,10 +81,14 @@ namespace WebUI.Areas.Identity.Pages.Account
                 //    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                 //    protocol: Request.Scheme);
             }
-            if (TempData["msg"] != null)
+
+            if (TempData[v] != null)
             {
-                EmailConfirmationResponse = TempData["msg"].ToString();
+                EmailConfirmationResponse = TempData[v].ToString();
             }
+
+            if (TempData[v] != null)
+                popNotification.Notyf(TempData[v].ToString());
 
             return Page();
         }

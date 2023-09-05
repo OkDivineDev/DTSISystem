@@ -10,6 +10,7 @@ namespace DataAccessLayer.Models
         [Required(ErrorMessage = "Reg No is required!")]
         public string RegNo { get; set; }
 
+        [ForeignKey("User")]
         public string UserId { get; set; }
 
         [Required(ErrorMessage = "Name is required!")]
@@ -32,7 +33,8 @@ namespace DataAccessLayer.Models
         public string DepartmentID { get; set; }
 
 
-        public virtual Assignment Assignment { get; set; }
+        public virtual UserInterface User { get; set; }
+        public virtual ICollection<StudentAssignment> StudentAssignments { get; set; }
         public virtual Department Department { get; set; }
     }
 }

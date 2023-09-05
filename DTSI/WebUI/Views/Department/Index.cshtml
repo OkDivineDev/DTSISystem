@@ -27,7 +27,6 @@
         border-radius: 5px;
     }
 
-    
 </style>
 
 <div class="container-fluid position-relative p-0">
@@ -55,7 +54,7 @@
 
         <div class="row g-5">
             <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                @if ( User.IsInRole("SuperAdmin"))
+                @if (User.IsInRole("Admin"))
                 {
                     <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEdit('')" value="Add Department" />
                 }
@@ -72,7 +71,7 @@
                                     <th>Name</th>
                                     <th>Code</th>
                                     <th>HOD</th>
-                                    @if (User.IsInRole("SuperAdmin"))
+                                    @if (User.IsInRole("Admin"))
                                     {
                                         <th class="text-center">Operations</th>
                                     }
@@ -84,44 +83,51 @@
                                     int i = 1;
                                     foreach (var item in ViewBag.DepartmentList as List<WebUI.DTOs.DepartmentViewModel>)
                                     {
-                                            <tr id="row_@item.Id">
-                                                <td>
-                                                    @if (i <= tot)
+                                        <tr id="row_@item.Id">
+                                            <td>
+                                                @if (i <= tot)
                                                 {
-                                                        @i
+                                                    @i
                                                 }
-                                                </td>
-                                                <td>@item.Name</td>
-                                                <td>@item.Code</td>
-                                                <td>@item.HODName</td>
+                                            </td>
+                                            <td>@item.Name</td>
+                                            <td>@item.Code</td>
+                                            <td>@item.HODName</td>
+
+                                            @if (User.IsInRole("Admin"))
+                                            {
                                                 <td class="text-center">
+                                                    <a class="btn btn-primary ms-2"
+                                           onclick="AddEdit('@item.Id')">
+                                                        Edit
+                                                    </a>
 
-                                                @if (User.IsInRole("SuperAdmin"))
-                                                {
-                                                        <a class="btn btn-primary ms-2"
-                                               onclick="AddEdit('@item.Id')">
-                                                            Edit
-                                                        </a>                                                       
-
-                                                        <a class="btn btn-danger ms-2"
-                                               onclick="ConfirmDeleteRecord('@item.Id')">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
-                                                }
-                                                
+                                                    <a class="btn btn-danger ms-2"
+                                           onclick="ConfirmDeleteRecord('@item.Id')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
                                                 </td>
-                                            </tr>
+                                            }
+
+                                        </tr>
                                         i++;
                                     }
                                 }
                             </tbody>
                             <tfoot class="bg-primary text-light">
                                 <tr>
-
-                                    <td colspan="5" class="text-center">
-                                        <b>DEPARTMENT - School Result Manager</b>
-                                    </td>
-
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <td colspan="5" class="text-center">
+                                            <b>DEPARTMENT - School Result Manager</b>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="4" class="text-center">
+                                            <b>DEPARTMENT - School Result Manager</b>
+                                        </td>
+                                    }
                                 </tr>
                             </tfoot>
 
@@ -270,9 +276,9 @@
 
             })
 
-          
 
-           
+
+
 
             $("#btnCancle2").click(function () {
                 $("#GetGradeAwardModal").modal("hide");
@@ -291,7 +297,7 @@
         })
 
 
-       
+
         var AddEdit = function (id) {
             $("#loaderDiv").show();
 
@@ -305,7 +311,7 @@
 
 
         var AddEditSession = function (id) {
-           
+
             $("#loaderDiv").show();
 
             var url = "/Department/AddEditSession?ID=" + id; //USED TO SEARCH ENTITY WITH ID

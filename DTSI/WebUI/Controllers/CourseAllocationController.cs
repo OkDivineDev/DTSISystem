@@ -50,7 +50,7 @@ namespace WebUI.Controllers
             popNotification = new PopNotification(notyfService);
         }
 
-        [Authorize(Roles = "HOD, Lecturer")]
+        [Authorize(Roles = "HOD,Lecturer")]
         public async Task<IActionResult> Index(SearchAllocationVm model)
         {
             try

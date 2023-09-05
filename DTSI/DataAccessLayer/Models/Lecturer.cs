@@ -6,7 +6,7 @@ namespace DataAccessLayer.Models
 {
     public class Lecturer : BaseEntity
     {
-       
+        [ForeignKey("User")]
         public string UserId { get; set; }
 
         public string Name { get; set; }
@@ -21,6 +21,7 @@ namespace DataAccessLayer.Models
         public string DepartmentID { get; set; }
 
 
+        public virtual UserInterface User { get; set; }
 
         public virtual ICollection<Department> Departments { get; set; }
         public virtual ICollection<CourseAllocation>? CourseAllocations { set; get; }

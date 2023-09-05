@@ -10,6 +10,6 @@ namespace DataAccessLayer.Models
 
         public virtual Lecturer Lecturer { get; set; }
         public virtual CourseBank Course { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
+        public virtual ICollection<StudentAssignment> StudentAssignments { get; set; }
     }
 }

@@ -10,6 +10,10 @@
   <ItemGroup>
     <None Include="node_modules/**" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Remove="Areas\Identity\Pages\Account\Manage\StudentProfile.cshtml" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCoreHero.ToastNotification" Version="1.1.0" />
     <PackageReference Include="ClosedXML" Version="0.102.0" />
@@ -27,6 +31,23 @@
   <ItemGroup>
     <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj" />
     <ProjectReference Include="..\DataAccessLayer\DataAccessLayer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Media\StudentPassport\" />
+    <Folder Include="wwwroot\TempUpload\Admission\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Areas\Identity\Pages\Account\Manage\StudentProfile.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\StudentProfile.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Areas\Identity\Pages\Account\Manage\StudentProfile.cshtml" />
   </ItemGroup>
 
 </Project>

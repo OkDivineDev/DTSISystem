@@ -53,7 +53,7 @@ namespace WebUI.Controllers
         }
 
         // GET: Employee
-        [Authorize(Roles = "HOD,DepartmentICT,Employee")]
+        [Authorize(Roles = "HOD,DepartmentICT,Lecturer")]
         public async Task<IActionResult> Index()
         {
             string msg = null;
@@ -328,12 +328,12 @@ namespace WebUI.Controllers
 
                                             if (isSaved)
                                             {
-                                                ms = $"{newLec.Name} employee record was created succesfully!";
+                                                ms = $"{newLec.Name} lecturer record was created succesfully!";
                                                 countDone += 1;
                                             }
                                             else
                                             {
-                                                ms = $"{newLec.Name} employee record was not created!";
+                                                ms = $"{newLec.Name} lecturer record was not created!";
                                                 countNotDone += 1;
                                             }
                                         }
@@ -381,12 +381,12 @@ namespace WebUI.Controllers
 
                                             if (isSaved)
                                             {
-                                                ms = $"{newLec.Name} user account and employee record was created succesfully!";
+                                                ms = $"{newLec.Name} user account and lecturer record was created succesfully!";
                                                 countDone += 1;
                                             }
                                             else
                                             {
-                                                ms = $"{newLec.Name} user account was created but employee record was not created!";
+                                                ms = $"{newLec.Name} user account was created but lecturer record was not created!";
                                                 countNotDone += 1;
                                             }
                                             //ADD RESPONSE TO UPLOAD RESPONSE
@@ -395,7 +395,7 @@ namespace WebUI.Controllers
                                         }
                                         else
                                         {
-                                            ms = newLec.Name + ": Unable to create user Account, hence employee record failed " + result.Errors.FirstOrDefault().ToString();
+                                            ms = newLec.Name + ": Unable to create user Account, hence lecturer record failed " + result.Errors.FirstOrDefault().ToString();
                                             //ADD RESPONSE TO UPLOAD RESPONSE
                                             upRes.Message = ms;
                                             uploadResponses.Add(upRes);

@@ -55,9 +55,9 @@
             <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
                 @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
                 {
-                    <a asp-controller="EmployeeManager" asp-action="UploadEmployee" class="btn btn-primary fw-bold px-3 fw-bolder mb-3">
+                    <a asp-controller="LecturerManager" asp-action="UploadLecturer" class="btn btn-primary fw-bold px-3 fw-bolder mb-3">
                         <i class="fa fa-upload"></i>
-                        Upload Employee
+                        Upload Lecturer
                     </a>
                 }
                 <div class="table-responsive">

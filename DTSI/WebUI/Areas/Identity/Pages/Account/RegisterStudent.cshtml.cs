@@ -30,7 +30,7 @@ namespace WebUI.Areas.Identity.Pages.Account
 {
     public class StudentRegisterModel : PageModel
     {
-        private string v = "";
+        private string v = "Msg";
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -264,6 +264,15 @@ namespace WebUI.Areas.Identity.Pages.Account
                     {
                         if (_repoStd.Add(newStd))
                         {
+                            //ADD USER TO STUDENT ROLE
+                            string m = string.Empty;
+
+                            var stdRole_result = await _userManager.AddToRoleAsync(user, "Student");
+                            if (stdRole_result.Succeeded)
+                            {
+                                m = "You have been added to Student Role";
+                            }
+
 
                             _logger.LogInformation("User created a new account with password.");
 
@@ -281,6 +290,10 @@ namespace WebUI.Areas.Identity.Pages.Account
 
                             if (_userManager.Options.SignIn.RequireConfirmedAccount)
                             {
+                                m += " and you registeration was successful, please wait for the admin to activate your account before login!";
+                                if (!string.IsNullOrEmpty(m))
+                                    TempData[v] = m;
+
                                 return RedirectToPage("RegisterConfirmation", new { email = StudentInput.Email, returnUrl = returnUrl });
                             }
                             else
