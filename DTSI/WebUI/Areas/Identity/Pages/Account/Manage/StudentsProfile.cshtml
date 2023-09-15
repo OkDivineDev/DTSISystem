@@ -1,0 +1,81 @@
+﻿@page
+@model StudentsProfileModel
+
+@{
+    ViewData["Title"] = "Student Profile";
+    ViewData["ActivePage"] = ManageNavPages.StudentProfile;
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <partial name="_StatusMessage" for="StatusMessage" />
+        <div class="card login-logout-card">
+            <div class="card-header">
+                <h3 class="card-title text-primary">
+                    @ViewData["Title"]
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-md-12">
+                        <form>
+
+                            <div>
+                                <img class="mb-5 mx-auto d-block w-50 img-thumbnail border-2 border-primary" src="/Media/StudentPassport/@Model.Input.Passport" alt="">
+                            </div>
+
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.Name" class="form-control" disabled />
+                                <label asp-for="Input.Name" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.Gender" class="form-control" disabled />
+                                <label asp-for="Input.Gender" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.RegNo" class="form-control" disabled />
+                                <label asp-for="Input.RegNo" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.JambRegNo" class="form-control" disabled />
+                                <label asp-for="Input.JambRegNo" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.EntryMode" class="form-control" disabled />
+                                <label asp-for="Input.EntryMode" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.EntryYear" class="form-control" disabled />
+                                <label asp-for="Input.EntryYear" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.GraduationYear" class="form-control" disabled />
+                                <label asp-for="Input.GraduationYear" class="form-label"></label>
+                            </div>
+
+                            <div class="form-floating my-2">
+                                <input asp-for="Input.Level" class="form-control" disabled />
+                                <label asp-for="Input.Level" class="form-label"></label>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -134,7 +134,10 @@ namespace WebUI.Areas.Identity.Pages.Account
                         context.HttpContext.Session.SetString("SessionDeptId", userEmp.DepartmentID);
                         context.HttpContext.Session.SetString("SessionEmpId", userEmp.Id);
                     }
-
+                    else if (!string.IsNullOrEmpty(Input.DepartmentId))
+                    {
+                        context.HttpContext.Session.SetString("SessionDeptId", Input.DepartmentId);
+                    }
                     var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {

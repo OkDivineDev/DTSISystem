@@ -1,0 +1,110 @@
+﻿@model WebUI.DTOs.CourseOutLineVm
+
+<form id="frmCourseOutLine">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.SN)
+    @if (Model.CourseId != null)
+    {
+        Html.HiddenFor(x => x.CourseId);
+
+       
+        <div class="form-floating my-4">
+            @Html.TextBoxFor(x => x.OutLine,  new { @class = "form-control"  })
+            <label asp-for="OutLine"></label>
+            <span asp-validation-for="OutLine" class="text-danger"></span>
+        </div>
+    }
+    else
+    {
+
+        <div class="form-floating my-4">
+            <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Code"))">
+                <option disabled selected>Select Course ...</option>
+            </select>
+            <label asp-for="CourseId"></label>
+            <span asp-validation-for="CourseId" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating my-2">
+            <p>
+                In the box below, fill in this manner;<br />
+                    write the outline <br />
+                    write another outline  <br />
+                Repeat same without serial number until the end of the selected course outline.
+            </p>
+        </div>
+
+        <div class="form-floating my-4">
+            <textarea asp-for="OutLine" class="form-control" autocomplete="on" aria-required="true" />
+            <label asp-for="OutLine"></label>
+            <span asp-validation-for="OutLine" class="text-danger"></span>
+        </div>
+
+    }
+
+    <div style="text-align: center;" id="loaderDiv2">
+        <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+    </div>
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate2">
+            @if (!String.IsNullOrEmpty(Model.OutLine))
+            {
+                <span>Update</span>
+            }
+            else
+            {
+                <span>Save</span>
+            }
+        </a>
+    </div>
+</form>
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#loaderDiv2").hide();
+
+        $('#btnSaveUpdate2').attr('disabled', 'true');
+
+        $('#OutLine').on('input change', function () {
+            if ($(this).val() != 0 &&
+                $(this).val() != '' &&
+                $("#Code").val().trim() != '') {
+                $("#btnSaveUpdate2").removeAttr("disabled");
+            }
+            else {
+                $('#btnSaveUpdate2').attr('disabled', 'true');
+            }
+        });
+
+
+        $("#btnSaveUpdate2").click(function () {
+
+            $("#loaderDiv2").show();
+
+
+            var frmData = $("#frmCourseOutLine").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/CourseManager/CourseOutLine",
+                data: data,
+                success: function (result) {
+
+                    $("#loaderDiv2").hide();
+                    $("#AddEditModal2").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+                    window.location.href = "/CourseManager/Index";
+
+                }
+            })
+        })
+
+    })
+</script>
+

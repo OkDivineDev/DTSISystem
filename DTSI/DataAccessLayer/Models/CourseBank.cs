@@ -18,6 +18,6 @@ namespace DataAccessLayer.Models
         public virtual Department Department { get; set; }
         public virtual ICollection<CourseAllocation>? CourseAllocations { get; set; }
         public virtual ICollection<Assignment>? Assignments { get; set; }
-        public virtual ICollection<Chat>? Chats { get; set; }
+        public virtual ICollection<CourseOutLine>? CourseOutLines { get; set; }
     }
 }

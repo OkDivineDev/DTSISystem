@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Course Management";
+    ViewData["Title"] = "Course Outline Management";
 }
 
 <style>
@@ -32,10 +32,10 @@
     <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
         <div class="row py-5">
             <div class="col-12 pt-lg-5 mt-lg-5 text-center">
-                <h1 class="display-4 text-white animated zoomIn">Course Management</h1>
+                <h1 class="display-4 text-white animated zoomIn">Course Outline Management</h1>
                 <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
                 <i class="far fa-circle text-white px-2"></i>
-                <a href="" class="h5 text-white">Course</a>
+                <a href="" class="h5 text-white">Course Outline</a>
             </div>
         </div>
     </div>
@@ -43,16 +43,13 @@
 
 <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
     <div class="container ">
-        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
-            <h5 class="fw-bold text-success text-uppercase">Department Courses</h5>
-            <h1 class="mb-0">Course Manager</h1>
-        </div>
+
 
         <div class="row g-5">
             <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DepartmentICT"))
+                @if (User.IsInRole("HOD") || User.IsInRole("DepartmentICT"))
                 {
-                    <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEdit('')" value="New Course" />
+                    <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEdit('')" value="Add Course Outline" />
                 }
 
                 <div class="table-responsive">
@@ -64,9 +61,8 @@
                                 <tr class="mt-2">
                                     <th>S/N</th>
                                     <th>Course Code</th>
-                                    <th>Unit</th>
-                                    <th>Title</th>
-                                    @if (User.IsInRole("DepartmentICT") || User.IsInRole("HOD") && ViewBag.IsHod)
+                                    <th>OutLine</th>
+                                    @if (User.IsInRole("DepartmentICT") || User.IsInRole("HOD"))
                                     {
                                         <th>Operations</th>
                                     }
@@ -76,30 +72,33 @@
                                 @{
                                     int tot = ViewBag.Count;
                                     int i = 1;
-                                    foreach (var item in ViewBag.AllCoursesx as List<WebUI.DTOs.CourseBankViewModel>)
+                                    foreach (var item in ViewBag.AllCourseOutLines as List<WebUI.DTOs.CourseOutLineVm>)
                                     {
-                                        <tr id="row_@item.ID">
+                                        <tr id="row_@item.Id">
                                             <td>
+                                                @item.SN
+
+                                                @*
                                                 @if (i <= tot)
                                                 {
                                                     @i
-                                                }
+                                                }*@
+
                                             </td>
-                                            <td> <a asp-action="CourseOutLine" asp-controller="CourseManager" asp-route-courseId="@item.ID">@item.Code</a> </td>
-                                            <td>@item.Unit</td>
-                                            <td>@item.Title</td>
+                                            <td>@item.CourseId</td>
+                                            <td>@item.OutLine</td>
 
 
-                                            @if (User.IsInRole("HOD") && ViewBag.IsHod || User.IsInRole("DeaprtmentICT"))
+                                            @if (User.IsInRole("HOD") || User.IsInRole("DeaprtmentICT"))
                                             {
                                                 <td>
                                                     <a class="btn btn-primary ms-2"
-                                           onclick="AddEdit('@item.ID')">
+                                                       onclick="AddEdit('@item.Id')">
                                                         Edit
                                                     </a>
 
                                                     <a class="btn btn-danger ms-2"
-                                           onclick="ConfirmDeleteRecord('@item.ID')">
+                                                       onclick="ConfirmDeleteRecord('@item.Id')">
                                                         <i class="fa fa-trash"></i>
                                                     </a>
 
@@ -121,7 +120,6 @@
                                 <strong class="text-info text-center text-capitalize">no data found or logout, login and try again</strong>
                             </div>
                         </div>
-
                     }
                 </div>
             </div>
@@ -129,29 +127,29 @@
     </div>
 </div>
 
-<div class="modal fade" id="AddEditModal" tabindex="-1" data-bs-backdrop="static"  data-keyboard="false">
+<div class="modal fade" id="AddEditModal2" tabindex="-1" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
                 <h2 class="modal-title text-center text-danger">
-                    Add New Coruse
+                    Add New Course Outline
                 </h2>
             </div>
-            <div class="modal-body" id="modalBody">
+            <div class="modal-body" id="modalBodyx">
             </div>
             <div class="modal-footer">
-                <div style="text-align: center; display: none;" id="loaderDiv">
+                <div style="text-align: center; display: none;" id="loaderDivx">
                     <img src="~/img/load.gif" width="50" height="50" class="img-circle img-thumbnail" />
                 </div>
-                <a href="#" class="btn btn-danger" id="btnReset">Reset</a>
-                <a href="#" class="btn btn-primary" id="btnCancle">Cancle</a>
+                <a href="#" class="btn btn-danger" id="btnResetx">Reset</a>
+                <a href="#" class="btn btn-primary" id="btnCanclex">Cancle</a>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="DeleteModalx" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -160,7 +158,7 @@
             </div>
 
             <div class="modal-body">
-                <form action="/CourseManager/DeleteCourse" method="get">
+                <form action="/CourseManager/DeleteCourseOutLine" method="get">
                     <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
                     <input type="hidden" name="ID" id="ID" />
                     <div class="d-grid gap-2 col-md-12 mx-auto">
@@ -187,31 +185,29 @@
                 alert(Smsg);
             }
 
-            $("#btnReset").click(function () {
-                $("#Code").val("");
-                $("#Unit").val("");
-                $("#Semester").val("");
-                $("#Title").val("");
+            $("#btnResetx").click(function () {
+                $("#CourseId").val("Select Course");
+                $("#OutLine").val("");
             })
 
-            $("#btnCancle").click(function () {
-                $("#AddEditModal").modal("hide");
+            $("#btnCanclex").click(function () {
+                $("#AddEditModal2").modal("hide");
             })
 
         })
 
         var AddEdit = function (id) {
-            var url = "/CourseManager/AddEditCourse?ID=" + id; //USED TO SEARCH ENTITY WITH ID
+            var url = "/CourseManager/AddEditCourseOutLine?ID=" + id; //USED TO SEARCH ENTITY WITH ID
 
-            $("#modalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+            $("#modalBodyx").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
 
-                $("#AddEditModal").modal("show");
+                $("#AddEditModal2").modal("show");
             })
         }
 
         var ConfirmDeleteRecord = function (id) {
             $("#ID").val(id);
-            $("#DeleteModal").modal("show");
+            $("#DeleteModalx").modal("show");
         }
     </script>
 

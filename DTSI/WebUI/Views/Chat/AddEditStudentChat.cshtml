@@ -1,0 +1,96 @@
+﻿@model WebUI.DTOs.StudentChatVm
+
+<form id="frmStudentChat" enctype="multipart/form-data" method="post" asp-controller="Chat" asp-action="StudentChat">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.CourseId)
+
+   @*  <div class="form-floating my-2">
+        <select asp-for="CourseId" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "Id", "Code"))"
+                onchange="loadOutline(this.value)">
+            <option disabled selected>Select Course ...</option>
+        </select>
+        <label asp-for="CourseId"></label>
+        <span asp-validation-for="CourseId" class="text-danger"></span>
+    </div> *@
+
+    <div class="form-floating my-2">
+        <select asp-for="OutlineId" class="form-control" asp-items="@(new SelectList(ViewBag.Outlines, "Id", "Outline"))">
+        </select>
+        <label asp-for="OutlineId"></label>
+        <span asp-validation-for="OutlineId" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating my-2">
+        <input asp-for="Message" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Message"></label>
+        <span asp-validation-for="Message" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating my-2">
+        <p class="text-warning">
+            Please kindly select only <b>Picture</b> file not more than 100kb otherwise it will be discarded!
+        </p>
+    </div>
+
+    <div class="form-floating my-2">
+        <input asp-for="Image" type="file" class="form-control" aria-describedby="Image">
+        <label asp-for="Image"></label>
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+
+
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <input type="submit" class="btn btn-primary submit fw-bold px-3 fw-bolder" value="Send" id="btnSaveUpdate" />
+    </div>
+</form>
+
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        $('#btnSaveUpdate').attr('disabled', 'true');
+
+        $('#Message').on('input change', function () {
+            if ($(this).val() != 0 &&
+                $(this).val() != '' {
+                $("#btnSaveUpdate").removeAttr("disabled");
+            }
+            else {
+                $('#btnSaveUpdate').attr('disabled', 'true');
+            }
+        });
+
+
+        $("#btnSaveUpdate").click(function () {
+
+            var frmData = $("#frmStudentChat").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/Chat/StudentChat",
+                data: data,
+                success: function (result) {
+
+                    $("#AddEditStudentModal").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+                    window.location.href = "/Chat/Index";
+                }
+            })
+        })
+
+
+
+
+
+
+    })
+
+
+</script>
+

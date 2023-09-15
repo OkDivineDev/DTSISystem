@@ -50,97 +50,127 @@ namespace WebUI.Controllers
             popNotification = new PopNotification(notyfService);
         }
 
-        [Authorize(Roles = "HOD,Lecturer")]
+        [Authorize(Roles = "HOD,Lecturer,Student")]
         public async Task<IActionResult> Index(SearchAllocationVm model)
         {
             try
             {
+                IEnumerable<CourseAllocation> dbCourseAlloc = null;
+                IEnumerable<CourseAllocationVm> courseAlloc = null;
 
                 string? sessionDeptId = context.HttpContext.Session.GetString("SessionDeptId") ?? null;
                 string? sessionEmpId = context.HttpContext.Session.GetString("SessionEmpId") ?? null;
 
-
-                bool isHod = await IsHod(sessionEmpId, sessionDeptId);
-                ViewBag.IsHod = isHod;
-
-                IEnumerable<CourseAllocation> dbCourseAlloc = null;
-                IEnumerable<CourseAllocationVm> courseAlloc = null;
-
-                //var getUser = await repoUserInterface.GetByIdAsync(x => x.Email == User.Identity.Name);
-
-                //var emp = await repoEmp.GetByIdAsync(emp => emp.UserId == getUser.UserId);
-                if (sessionEmpId == null || sessionDeptId == null)
+                if (User.IsInRole("Student") && !string.IsNullOrEmpty(sessionDeptId))
                 {
-                    TempData[v] = "Error, logout, login with your department selected and try again!";
-                    return RedirectToAction("Index", "AdminManager");
+                    var lstCourseAllocVm = new List<CourseAllocationVm>();
+
+                    if (!string.IsNullOrEmpty(model._Session))
+                        dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.DepartmentID == sessionDeptId);
+
+                    if (dbCourseAlloc != null)
+                        foreach (var cs in dbCourseAlloc)
+                        {
+                            var semester = cs.Semester == 1 ? SemesterEnum.First : SemesterEnum.Second;
+                            var course = await repoCourse.GetByIdAsync(x => x.Id == cs.CourseID);
+                            var lect = await repoLec.GetByIdAsync(x => x.Id == cs.LecturerID);
+                            var dept = await repoDept.GetByIdAsync(x => x.Id == lect.DepartmentID);
+
+                            lstCourseAllocVm.Add(new CourseAllocationVm
+                            {
+                                Approved = cs.Approved,
+                                CourseID = course.Code,
+                                Semester = semester,
+                                Session = cs.Session,
+                                Id = cs.Id,
+                                LecturerID = lect.Name,
+                                DepartmentID = dept.Code
+                            });
+                        }
+
+                    courseAlloc = lstCourseAllocVm;
                 }
                 else
                 {
-                    var isHodToDept = await repoLec.GetByIdAsync(x => x.Id == sessionEmpId);
-                    var dept = await repoDept.GetByIdAsync(x => x.Id == sessionDeptId && x.HODUserId == isHodToDept.UserId);
 
-                    if (User.IsInRole("HOD") && dept != null)
+                    bool isHod = await IsHod(sessionEmpId, sessionDeptId);
+                    ViewBag.IsHod = isHod;
+
+                    if (sessionEmpId == null || sessionDeptId == null)
                     {
-                        if (!string.IsNullOrEmpty(model._Session))
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.DepartmentID == sessionDeptId);
-                        else
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.DepartmentID == sessionDeptId);
-
-                        if (dbCourseAlloc.Any())
-                        {
-                            _ = dbCourseAlloc.OrderBy(x => x.Session);
-
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
-                        }
-                        else if (!string.IsNullOrEmpty(model._Session))
-                        {
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
-                        }
-                    }
-                    else if (User.IsInRole("DepartmentICT"))
-                    {
-                        if (!string.IsNullOrEmpty(model._Session))
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.DepartmentID == sessionDeptId);
-                        else
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.DepartmentID == sessionDeptId);
-
-                        if (dbCourseAlloc.Any())
-                        {
-                            _ = dbCourseAlloc.OrderBy(x => x.Session);
-
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, false, model._Session);
-                        }
-                        else if (!string.IsNullOrEmpty(model._Session))
-                        {
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
-                        }
+                        TempData[v] = "Error, logout, login with your department selected and try again!";
+                        return RedirectToAction("Index", "AdminManager");
                     }
                     else
                     {
-                        if (!string.IsNullOrEmpty(model._Session))
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.LecturerID == sessionEmpId);
+                        var isHodToDept = await repoLec.GetByIdAsync(x => x.Id == sessionEmpId);
+                        var dept = await repoDept.GetByIdAsync(x => x.Id == sessionDeptId && x.HODUserId == isHodToDept.UserId);
+
+                        if (User.IsInRole("HOD") && dept != null)
+                        {
+                            if (!string.IsNullOrEmpty(model._Session))
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.DepartmentID == sessionDeptId);
+                            else
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.DepartmentID == sessionDeptId);
+
+                            if (dbCourseAlloc.Any())
+                            {
+                                _ = dbCourseAlloc.OrderBy(x => x.Session);
+
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            }
+                            else if (!string.IsNullOrEmpty(model._Session))
+                            {
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            }
+                        }
+                        else if (User.IsInRole("DepartmentICT"))
+                        {
+                            if (!string.IsNullOrEmpty(model._Session))
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.DepartmentID == sessionDeptId);
+                            else
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.DepartmentID == sessionDeptId);
+
+                            if (dbCourseAlloc.Any())
+                            {
+                                _ = dbCourseAlloc.OrderBy(x => x.Session);
+
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, false, model._Session);
+                            }
+                            else if (!string.IsNullOrEmpty(model._Session))
+                            {
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            }
+                        }
                         else
-                            dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.LecturerID == sessionEmpId);
-
-                        if (dbCourseAlloc.Any())
                         {
-                            _ = dbCourseAlloc.OrderBy(x => x.Session);
+                            if (!string.IsNullOrEmpty(model._Session))
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.Session == model._Session && x.LecturerID == sessionEmpId);
+                            else
+                                dbCourseAlloc = await repoCourseAllo.GetByQueryAsync(x => x.LecturerID == sessionEmpId);
 
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            if (dbCourseAlloc.Any())
+                            {
+                                _ = dbCourseAlloc.OrderBy(x => x.Session);
+
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            }
+                            else if (!string.IsNullOrEmpty(model._Session))
+                            {
+                                courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
+                            }
                         }
-                        else if (!string.IsNullOrEmpty(model._Session))
-                        {
-                            courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
-                        }
+
+
+
+
                     }
-
-
-
-                    ViewBag.CourseAllocations = courseAlloc;
-                    ViewBag.Count = courseAlloc != null ? courseAlloc.Count() : 0;
-
-                    ViewBag.Sessions = await repoSession.GetAll();
                 }
+
+                ViewBag.CourseAllocations = courseAlloc;
+                ViewBag.Count = courseAlloc != null ? courseAlloc.Count() : 0;
+
+                ViewBag.Sessions = await repoSession.GetAll();
             }
             catch (Exception ex)
             {

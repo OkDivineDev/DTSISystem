@@ -11,10 +11,10 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
     <!-- site metas -->
     <meta name="keywords" content="">
-    <meta name="description" content="NCCE Abuja Website">
-    <meta name="author" content="PRINCEWILL OGU @@ iheanyiprincewill@gmail.com">
-    <title>@ViewData["Title"] - National Commission for Colleges of Education</title>
-    <link rel="icon" href="~/img/NCCE_logo.png" type="image/gif" />
+    <meta name="description" content="Enugu State University of Science and Technology">
+    <meta name="author" content="softkonnectdev@gmail.com">
+    <title>@ViewData["Title"] - Teacher And Student Interation</title>
+    <link rel="icon" href="~/img/SoftKonnectLogo3.png" type="image/gif" />
 
     @* BOOTSTRAP 5 CDN *@
 
@@ -72,7 +72,7 @@
 
     <!-- Topbar End -->
     <!-- Spinner Start -->
-    <div id="spinner" class="show bg-success position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+    <div id="spinner" class="show bg-primary position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner"></div>
     </div>
     <!-- Topbar Start -->
@@ -100,18 +100,16 @@
     <!-- Navbar & Carousel Start -->
     <div class="container-fluid position-relative p-0">
         <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0">
-            <a href="@Url.Action("Index","Home")" class="navbar-brand bg-success p-1 m-0">
+            <a href="@Url.Action("Index","Home")" class="navbar-brand p-1 m-0">
                 <div class="d-none d-md-block">
-                    <h1 class="h2" style="color:white">
-                        <img src="~/img/NCCE_logo.png" width="30px" height="45" class="mb-2" />
-                        NCCE, Abuja
+                    <h1 class="h2">
+                        D-T-S-I
                     </h1>
                 </div>
 
                 <div class="d-md-none">
-                    <h1 class="h2" style="color:white">
-                        <img src="~/img/NCCE_logo.png" width="30px" height="45" class="mb-3" />
-                        NCCE, Abuja
+                    <h1 class="h2" >
+                        D-T-S-I
                     </h1>
                 </div>
 
@@ -134,15 +132,11 @@
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Apps</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Chat</a>
                         <div class="dropdown-menu m-0">
-
-                            <a asp-action="Index" asp-controller="Resources" target="_blank" class="dropdown-item">Our Archives</a>
-
-
+                            <a asp-controller="Chat" asp-action="LoadCourses" class="dropdown-item" title="Load Course for chat room">Chat Rooms</a>
                         </div>
                     </div>
-                    <a asp-area="" asp-controller="Home" asp-action="Contact" class="nav-item nav-link">Contact</a>
                 </div>
                 <butaton type="button" class="btn text-primary ms-3" data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fa fa-search"></i></butaton>
 
@@ -160,24 +154,6 @@
     <div class="container-fluid">
         <main role="main" class="pb-3">
 
-            <!-- Full Screen Search Start -->
-            <div class="modal fade" id="searchModal" tabindex="-1">
-                <div class="modal-dialog modal-fullscreen">
-                    <div class="modal-content" style="background: rgba(9, 30, 62, .7);">
-                        <div class="modal-header border-0">
-                            <button type="button" class="btn bg-white btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body d-flex align-items-center justify-content-center">
-                            <div class="input-group" style="max-width: 600px;">
-                                <input type="text" class="form-control bg-transparent border-primary p-3" placeholder="Type search keyword">
-                                <button class="btn btn-primary px-4"><i class="bi bi-search"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Full Screen Search End -->
-          
             @RenderBody()
         </main>
     </div>
@@ -262,12 +238,12 @@
             <div class="row justify-content-end">
                 <div class="col-lg-8 col-md-6">
                     <div class="d-flex align-items-center justify-content-center" style="height: 75px;">
-                        <p class="mb-0">
+                        @* <p class="mb-0">
                             &copy; <a class="text-white border-bottom" href="#">Your Site Name</a>. All Rights Reserved.
 
                             <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                             Designed by <a class="text-white border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                        </p>
+                        </p> *@
                     </div>
                 </div>
             </div>
@@ -300,6 +276,20 @@
     <script src="~/DataTable/js/cdnjs.cloudflare.com_ajax_libs_pdfmake_0.1.53_vfs_fonts.js"></script>
     <script src="~/DataTable/js/cdn.datatables.net_buttons_2.4.1_js_buttons.html5.min.js"></script>
 
+
+
+    <script>
+
+        var LoadChat = function () {
+
+            var url = "/Chat/LoadCourses"; //USED TO SEARCH ENTITY WITH ID
+
+            $("#modalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+
+                $("#chatModal").modal("show");
+            })
+        }
+    </script>
 
 
 

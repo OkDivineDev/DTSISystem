@@ -209,7 +209,7 @@ namespace WebUI.Areas.Identity.Pages.Account
                     string passName = StudentInput.RegNo + Path.GetExtension(StudentInput.PassportFile.FileName);
 
 
-                    string path = Path.Combine("wwwroot", "Media", "StudentPassport", StudentInput.PassportFile.FileName.Replace(" ", "_"));
+                    string path = Path.Combine("wwwroot", "Media", "StudentPassport", passName.Replace(" ", "_"));
 
                     if (System.IO.File.Exists(path))
                         System.IO.File.Delete(path);

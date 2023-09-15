@@ -4,6 +4,7 @@ using DataAccessLayer.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(DatabaseEntity))]
-    partial class DatabaseEntityModelSnapshot : ModelSnapshot
+    [Migration("20230911095859_courseoutlineTable")]
+    partial class courseoutlineTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +23,21 @@ namespace DataAccessLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("ChatCourseBank", b =>
+                {
+                    b.Property<string>("ChatsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CoursesId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ChatsId", "CoursesId");
+
+                    b.HasIndex("CoursesId");
+
+                    b.ToTable("ChatCourseBank");
+                });
 
             modelBuilder.Entity("DataAccessLayer.Models.AcademicSession", b =>
                 {
@@ -118,11 +135,12 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CourseID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
                         .IsRequired()
@@ -227,9 +245,6 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("OutLine")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SN")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -437,6 +452,21 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("LecturersId");
 
                     b.ToTable("DepartmentLecturer");
+                });
+
+            modelBuilder.Entity("ChatCourseBank", b =>
+                {
+                    b.HasOne("DataAccessLayer.Models.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DataAccessLayer.Models.CourseBank", null)
+                        .WithMany()
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Admission", b =>

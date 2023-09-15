@@ -9,6 +9,7 @@ namespace DataAccessLayer.Database
         {
         }
 
+        public virtual DbSet<CourseOutLine> CourseOutLines { get; set; }
         public virtual DbSet<StudentAssignment> StudentAssignments { get; set; }
         public virtual DbSet<UserInterface> AppUsers { get; set; }
         public virtual DbSet<Chat> Chats { get; set; }

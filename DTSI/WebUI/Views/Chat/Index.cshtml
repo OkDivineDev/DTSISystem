@@ -1,0 +1,251 @@
+﻿@model IEnumerable<WebUI.DTOs.ChatVM>
+
+@{
+    ViewData["Title"] = "Course Chat Room";
+}
+
+<style>
+
+    body {
+        font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif;
+        background: url('/img/panda-gifs.gif') no-repeat fixed;
+        background-size: cover;
+        font-size: 16px;
+    }
+
+    #chatContainer {
+        height: 600px;
+        border: 2px solid #aaa;
+        padding: 20px;
+        background-color: #eee;
+        overflow-y: scroll;
+    }
+
+    #myChat {
+        background-color: gray;
+        width: 80%;
+        padding: 20px;
+        margin: 5px 5px;
+        border-radius: 20px 20px 0 20px;
+        color: white;
+        font-size: 13px;
+    }
+
+    #theirChat {
+        background-color: dodgerblue;
+        width: 80%;
+        padding: 20px;
+        margin: 5px 5px;
+        border-radius: 20px 20px 20px 0;
+        color: white;
+        font-size: 13px;
+    }
+
+    #btnChat {
+        border-radius: 0 0 20px 20px;
+        width: 100%;
+        border: 2px solid #aaa;
+   }
+
+    #headerDiv{
+        min-height: 80px;
+        border: 2px solid #aaa;
+        border-radius: 20px 20px 0 0;
+        background-color: #eee;
+   }
+
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Interaction Room</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">lecturer / Student Chat</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container ">
+        <div class="row gap-2">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="pt-4" id="headerDiv">
+                    <div class="section-title text-center position-relative pb-4 mb-2">
+                        <h2>Welcome - <em>@User.Identity.Name</em></h2>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+       
+        <div class="row gap-2">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class=" w-100" id="chatContainer">
+
+                    @if (Model.Any())
+                    {
+                        foreach (var chat in Model)
+                        {
+                            if (chat.IsYours)
+                            {
+                                //  FLOAT RIGHT
+                                <div class="float-end" id="myChat">
+                                    <i style="color:black">@chat.CourseId - Outline SN:@chat.OutlineId | Date:@chat.Date_Time</i>
+                                    <span class="ms-4">@@ @chat.UserId</span>
+                                    <hr>
+                                    <p class="float-end">@chat.Message</p>
+                                </div>
+                            }
+                            else
+                            {
+                                //  FLOAT LEFT
+                                <div class="float-start" id="theirChat">
+                                    <i style="color:black">@chat.CourseId - Outline SN:@chat.OutlineId | Date:@chat.Date_Time</i>
+                                    <span class="ms-4">@@ @chat.UserId</span>
+                                    <hr>
+                                    <p class="float-start">@chat.Message</p>
+                                </div>
+                            }
+                        }
+                    }
+
+                </div>
+                <input type="button" id="btnChat" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEdit('')" value="New Message" />
+
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+</div>
+
+@* MODAL FOR STUDENT  *@
+
+<div class="modal fade" id="AddEditStudentModal" tabindex="-1" data-bs-backdrop="static" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Chat - Student
+                </h2>
+            </div>
+            <div class="modal-body" id="modalBodyStudent">
+            </div>
+            <div class="modal-footer">
+
+
+                <a href="#" class="btn btn-primary" id="btnCancle1">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@* MODAL FOR LECTURER  *@
+<div class="modal fade" id="AddEditLecturerModal" tabindex="-1" data-bs-backdrop="static" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Chat - Lecturer
+                </h2>
+            </div>
+            <div class="modal-body" id="modalBodyLecturer">
+            </div>
+            <div class="modal-footer">
+
+                <a href="#" class="btn btn-danger" id="btnReset1">Reset</a>
+                <a href="#" class="btn btn-primary" id="btnCancle1">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete Record</h1>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form action="/CourseManager/DeleteCourse" method="get">
+                    <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
+                    <input type="hidden" name="ID" id="ID" />
+                    <div class="d-grid gap-2 col-md-12 mx-auto">
+                        <input type="submit" class="btn btn-danger" value="Yes Delete" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+
+
+
+            $("#btnCancle1").click(function () {
+                $("#AddEditStudentModal").modal("hide");
+            })
+
+        })
+
+        var AddEdit = function (id) {
+            var url = "/Chat/AddEditStudentChat?ID=" + id; //USED TO SEARCH ENTITY WITH ID
+
+            $("#modalBodyStudent").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                $("#AddEditStudentModal").modal("show");
+            })
+        }
+
+        var ConfirmDeleteRecord = function (id) {
+            $("#ID").val(id);
+            $("#DeleteModal").modal("show");
+        }
+
+
+
+
+                                        // var loadOutline = function (courseId) {
+
+                                        //     let dropdown = $('#OutlineId');
+
+                                        //     dropdown.empty();
+
+                                        //     dropdown.append('<option selected="true" disabled>Choose Course Outline</option>');
+                                        //     dropdown.prop('selectedIndex', 0);
+
+
+                                        //     $.ajax({
+                                        //         type: "GET",
+                                        //         url: "/Chat/GetOutline?courseId=" + courseId,
+                                        //         async: true,
+                                        //         success: function (result) {
+
+                                        //             for (let i = 0; i < result.length; i++) {
+
+                                        //                 dropdown.append($('<option></option>').attr('value', result[i].id).text(result[i].outLine));
+
+                                        //             }
+
+                                        //         }
+                                        //     })
+
+
+                                        // }
+    </script>
+
+}

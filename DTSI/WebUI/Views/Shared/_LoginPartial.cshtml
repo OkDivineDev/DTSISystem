@@ -7,7 +7,7 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <div class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle btn btn-success" data-bs-toggle="dropdown" style="color:white">Profile</a>
+        <a href="#" class="nav-link dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" style="color:white">Profile</a>
         <div class="dropdown-menu m-0">
             <a id="manage" class="nav-link text-danger" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">User</a>
             <a asp-area="" asp-controller="AdminManager" asp-action="Index" class="dropdown-item" title="Admin Manager">Manager</a>
@@ -20,8 +20,8 @@
 }
 else
 {
-    <a class="btn btn-success py-1 px-4 ms-3" id="register" asp-area="Identity" asp-page="/Account/Register">Sign Up</a>
-    <a class="btn btn-success py-1 px-4 ms-3" id="login" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
+    <a class="btn btn-primary py-1 px-4 ms-3" id="register" asp-area="Identity" asp-page="/Account/Register">Sign Up</a>
+    <a class="btn btn-primary py-1 px-4 ms-3" id="login" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
 }
 
 
