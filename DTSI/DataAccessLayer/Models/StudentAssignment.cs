@@ -13,6 +13,9 @@ namespace DataAccessLayer.Models
         public string AssignmentID { get; set; }
 
 
+        public string Answer { get; set; }
+        public string? ImageUrl { get; set; }
+
         public virtual Student Student { get; set; }
         public virtual Assignment Assignment { get; set; }
     }

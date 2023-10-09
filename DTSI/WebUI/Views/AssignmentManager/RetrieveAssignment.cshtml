@@ -1,0 +1,105 @@
+﻿@model WebUI.DTOs.SearchAssignmentVm
+
+
+
+
+<form id="frmDepartment">
+    @Html.AntiForgeryToken()
+
+
+    <div class="form-floating my-2">
+        <input asp-for="Code" class="form-control" autocomplete="on" aria-required="true" />
+        <label asp-for="Code"></label>
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+
+
+    <div style="text-align: center;" id="loaderDiv1x">
+        <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+    </div>
+
+    <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+        <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate">
+            <span>Search</span>
+        </a>
+    </div>
+</form>
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#loaderDiv1x").hide();
+
+        $("#btnSaveUpdate").click(function () {
+
+            $("#loaderDiv1x").show();
+
+            var frmData = $("#frmDepartment").serialize();
+            var data = frmData;
+
+            var code = $("#Code").val();
+            
+
+            if (code.trim() === "" ) {
+                alert("Please, kindly check the filed you're leaving blank, fill all field!");
+                $("#loaderDiv1x").hide();
+            } else {
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/AssignmentManager/RetrieveAssignment",
+                    data: data,
+                    success: function (id) {
+                        $("#GetAssignment").modal("hide");
+                                                
+                        var url = "/AssignmentManager/RetrievedAssignment?ID="+id; //USED TO SEARCH ENTITY WITH ID
+
+                        $("#retrievedAssignmentModalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                            // $("#loaderDiv").hide();
+                            $("#RetrievedAssignmentModal").modal("show");
+                        })
+                    }
+                })
+            }
+        })
+
+    })
+    // $(document).ready(function () {
+    //     // $("#loaderDiv1x").hide();
+
+
+
+
+    //     $("#btnSearch").click(function () {
+
+    //         $("#loaderDiv1x").show();
+
+
+    //         var frmData = $("#frmSearch").serialize();
+    //         var data = frmData;
+    //         debugger;
+    //         $.ajax({
+    //             type: "POST",
+    //             url: "/AssignmentManager/RetrieveAssignment",
+    //             data: data,
+    //             success: function (result) {
+    //                 alert("Hello");
+    //                 // $("#loaderDiv1x").hide();
+    //                 // $("#GetAssignment").modal("hide");
+
+    //                 // var url = "/AssignmentManager/RetrievedAssignment"; //USED TO SEARCH ENTITY WITH ID
+
+    //                 // $("#retrievedAssignmentModalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+
+    //                 //     $("#RetrievedAssignment").modal("show");
+    //                 // })
+
+    //             }
+    //         });
+    //     });
+
+    // })
+</script>

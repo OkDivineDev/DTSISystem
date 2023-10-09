@@ -14,7 +14,7 @@ namespace WebUI.DTOs
         public string? CourseId { get; set; }
         
         [DataType(DataType.MultilineText)]
-        [RegularExpression(@"^[\w\-'’“”&`(),.0-9\s]+$",
+        [RegularExpression(@"^[\w\-'’“”;:&`(),.0-9\s]+$",
          ErrorMessage = "Not in proper format!")]
         [Display(Name = "Course Outline")]
         public string? OutLine { get; set; }

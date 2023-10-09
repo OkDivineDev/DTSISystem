@@ -8,6 +8,7 @@ using WebUI.DTOs;
 
 namespace WebUI.Controllers
 {
+    [Authorize(Roles = "Student,HOD,DeaprtmentICT,Lecturer")]
     public class ChatController : Controller
     {
         private readonly IRepository<CourseBank> repoCourse;
@@ -156,7 +157,7 @@ namespace WebUI.Controllers
             return PartialView("AddEditStudentChat", model);
         }
 
-        //[Authorize(Roles = "Student")]
+
         [HttpPost]
         public async Task<IActionResult> StudentChat(StudentChatVm model)
         {
@@ -274,7 +275,7 @@ namespace WebUI.Controllers
         public async Task<IActionResult> LoadCourses()
         {
             List<CourseBankViewModel> coursesVm = new();
-            
+
             try
             {
                 string? sessionDeptId = context.HttpContext.Session.GetString("SessionDeptId") ?? null;
@@ -283,11 +284,11 @@ namespace WebUI.Controllers
                 if (User.IsInRole("Lecturer") && !string.IsNullOrEmpty(sessionEmpId))
                 {
                     var allocCs = await repoCSAlloc.GetByQueryAsync(x => x.LecturerID == sessionEmpId);
-                    if(allocCs.Any())
+                    if (allocCs.Any())
                         foreach (var allocC in allocCs)
                         {
                             var course = await repoCourse.GetByIdAsync(x => x.Id == allocC.CourseID);
-                            
+
                             coursesVm.Add(new CourseBankViewModel
                             {
                                 ID = course.Id,
@@ -296,17 +297,17 @@ namespace WebUI.Controllers
                             });
                         }
                 }
-                else if (User.IsInRole("Student"))
+                else if (User.IsInRole("Student") && !string.IsNullOrEmpty(sessionDeptId))
                 {
                     var user = await repoUser.GetByIdAsync(x => x.Email == User.Identity.Name);
                     var std = await repoStd.GetByIdAsync(x => x.UserId == user.UserId);
-                    string level = std.Level.ToString().Substring(0,1);
+                    string level = std.Level.ToString().Substring(0, 1);
 
                     int levelInitial = Convert.ToInt32(level);
 
 
-                    var courses = await repoCourse.GetByQueryAsync(x => x.DepartmentID == sessionDeptId && Convert.ToInt32(x.Code.Substring(0,1)) <= levelInitial);
-                    _ = courses.OrderBy(x => x.Code);
+                    var courses = await repoCourse.GetByQueryAsync(x => x.DepartmentID == sessionDeptId && Convert.ToInt32(x.Code.Substring(4, 1)) <= levelInitial);
+
 
                     if (courses.Any())
                         foreach (var cs in courses)
@@ -319,7 +320,7 @@ namespace WebUI.Controllers
                             });
                         }
                 }
-                
+
             }
             catch (Exception)
             {
@@ -329,7 +330,7 @@ namespace WebUI.Controllers
             if (TempData[v] != null)
                 popNotification.Notyf(TempData[v].ToString());
 
-            return View(coursesVm);
+            return View(coursesVm.OrderBy(x => x.Code));
         }
 
         public async Task<List<CourseOutLineVm>> GetOutline(string courseId)

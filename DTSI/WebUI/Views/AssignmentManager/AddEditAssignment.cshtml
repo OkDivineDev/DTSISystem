@@ -1,0 +1,87 @@
+﻿@model WebUI.DTOs.AssignmentVM
+
+<div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+    <form id="frmCourse">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.LecturerID)
+
+        <div class="form-floating my-4">
+            <select asp-for="CourseID" class="form-control" asp-items="@(new SelectList(ViewBag.Courses, "ID", "Code"))">
+                <option disabled selected>Select Course ...</option>
+            </select>
+            <label asp-for="CourseID"></label>
+            <span asp-validation-for="CourseID" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating my-2">
+            <textarea asp-for="Questions" class="form-control" autocomplete="on" aria-required="true" />
+            <label asp-for="Questions"></label>
+            <span asp-validation-for="Questions" class="text-danger"></span>
+        </div>
+
+        <div class="form-floating my-2">
+            <input asp-for="SubmissionDate" class="form-control" autocomplete="on" aria-required="true" />
+            <label asp-for="SubmissionDate"></label>
+            <span asp-validation-for="SubmissionDate" class="text-danger"></span>
+        </div>
+
+        <div style="text-align: center;" id="loaderDiv1d">
+            <img src="~/img/load.gif" width="80" height="80" class="img-circle img-thumbnail" />
+        </div>
+
+        <div class="d-grid gap-2 col-md-12 mx-auto mt-2">
+            <a href="#" class="btn btn-primary submit fw-bold px-3 fw-bolder" id="btnSaveUpdate">
+                <span>Save</span>
+            </a>
+        </div>
+    </form>
+
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $("#loaderDiv1d").hide();
+
+        $('#btnSaveUpdate').attr('disabled', 'true');
+
+        $('#Unit').on('input change', function () {
+            if ($(this).val() != 0 &&
+                $(this).val() != '' &&
+                $("#Code").val().trim() != '') {
+                $("#btnSaveUpdate").removeAttr("disabled");
+            }
+            else {
+                $('#btnSaveUpdate').attr('disabled', 'true');
+            }
+        });
+
+
+        $("#btnSaveUpdate").click(function () {
+
+            $("#loaderDiv1d").show();
+
+
+            var frmData = $("#frmCourse").serialize();
+            var data = frmData;
+
+
+            $.ajax({
+                type: "POST",
+                url: "/AssignmentManager/Index",
+                data: data,
+                success: function (result) {
+
+                    $("#loaderDiv1d").hide();
+                    $("#AddEditModal").modal("hide"); //TO HIDE MODAL AFTER SAVING RECORD
+                    window.location.href = "/AssignmentManager/Index";
+
+                }
+            })
+        })
+
+    })
+</script>
+

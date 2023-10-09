@@ -90,7 +90,7 @@ namespace WebUI.Controllers
 
                     courseAlloc = lstCourseAllocVm;
                 }
-                else
+                else if (!string.IsNullOrEmpty(sessionDeptId))
                 {
 
                     bool isHod = await IsHod(sessionEmpId, sessionDeptId);
@@ -160,22 +160,26 @@ namespace WebUI.Controllers
                                 courseAlloc = await PopulateCourseAllocation(dbCourseAlloc, true, model._Session);
                             }
                         }
-
-
-
-
                     }
                 }
 
-                ViewBag.CourseAllocations = courseAlloc;
-                ViewBag.Count = courseAlloc != null ? courseAlloc.Count() : 0;
+                if (courseAlloc != null)
+                {
+                    ViewBag.CourseAllocations = courseAlloc.OrderBy(x => x.Session).ToList();
+                    ViewBag.Count = courseAlloc.Count();
+                }
+                else
+                {
+                    ViewBag.CourseAllocations = new List<CourseAllocationVm>();
+                    ViewBag.Count = 0;
+                }
 
                 ViewBag.Sessions = await repoSession.GetAll();
             }
             catch (Exception ex)
             {
                 TempData[v] = "Fatal Error, please try again or contact admin!";
-                return RedirectToAction("Index", "AdminManager");
+                return RedirectToAction("Index", "Home");
             }
 
             if (TempData[v] != null)

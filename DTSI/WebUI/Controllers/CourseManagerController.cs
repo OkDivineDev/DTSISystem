@@ -87,37 +87,7 @@ namespace WebUI.Controllers
                             });
                         }
                     }
-                    //}
-                    //else
-                    //{
-
-                    //    var department = await repoDept.GetByIdAsync(x => x.Id == sessionDeptId);
-                    //    if (department != null)
-                    //    {
-                    //        TempData["deptId"] = department.Id;
-                    //        deptID = department.Id;
-                    //        deptName = department.Name;
-                    //    }
-
-                    //    var getCourses = await repoCourse.GetByQueryAsync(c => c.DepartmentID == deptID);
-                    //    if (getCourses.Any())
-                    //    {
-                    //        foreach (var course in getCourses)
-                    //        {
-                    //            coursesVm.Add(new
-                    //                CourseBankViewModel
-                    //            {
-                    //                ID = course.Id,
-                    //                Code = course.Code,
-                    //                Department = deptName,
-                    //                Unit = course.Unit,
-                    //                DepartmentID = deptID,
-                    //                Title = course.Title
-                    //            });
-                    //        }
-                    //    }
-
-                    //}
+                    
 
                     if (!string.IsNullOrEmpty(sessionEmpId))
                     {
@@ -127,7 +97,7 @@ namespace WebUI.Controllers
                 }
 
                 ViewBag.Count = coursesVm.Count;
-                ViewBag.AllCoursesx = coursesVm.ToList();
+                ViewBag.AllCoursesx = coursesVm.OrderBy(x => x.Code.Trim()).ToList();
             }
             catch (Exception ex)
             {
@@ -268,7 +238,7 @@ namespace WebUI.Controllers
         #region COURSE-GUIDE CRUDE
         //LIST ALL COURSE OUTLINES
         [HttpGet]
-        [Authorize(Roles = "HOD,DepartmentICT,Student")]
+        [Authorize(Roles = "HOD,DepartmentICT,Student,Lecturer")]
         public async Task<IActionResult> CourseOutLine(SearchCourseOutlineVM model, string courseId)
         {
             try

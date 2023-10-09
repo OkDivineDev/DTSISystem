@@ -9,9 +9,17 @@
     <div class="nav-item dropdown">
         <a href="#" class="nav-link dropdown-toggle btn btn-primary" data-bs-toggle="dropdown" style="color:white">Profile</a>
         <div class="dropdown-menu m-0">
+            
             <a id="manage" class="nav-link text-danger" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">User</a>
-            <a asp-area="" asp-controller="AdminManager" asp-action="Index" class="dropdown-item" title="Admin Manager">Manager</a>
-
+            @if (User.IsInRole("HOD") || User.IsInRole("Lecturer") || User.IsInRole("DepartmentICT"))
+            {
+                <a asp-area="" asp-controller="LecturerManager" asp-action="Index" class="dropdown-item" title="Lecturer Details">Lecturer</a>
+            }
+            @if (User.IsInRole("HOD") || User.IsInRole("SchoolOwner") || User.IsInRole("Admin") || User.IsInRole("DepartmentICT"))
+            {
+                           <a asp-area="" asp-controller="AdminManager" asp-action="Index" class="dropdown-item" title="Admin Manager">Manager</a>
+            }
+            
             <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                 <button id="logout" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
             </form>

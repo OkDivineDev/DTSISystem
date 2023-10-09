@@ -48,7 +48,7 @@
 <div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
     <div class="container ">
         <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
-            <h5 class="fw-bold text-success text-uppercase">Departments</h5>
+            <h5 class="fw-bold text-primary text-uppercase">Departments</h5>
             <h1 class="mb-0">Department Manager</h1>
         </div>
 
@@ -58,7 +58,11 @@
                 {
                     <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEdit('')" value="Add Department" />
                 }
-                <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEditSession('')" value="Add Session" />
+
+                @if (User.IsInRole("HOD") || User.IsInRole("DepartmentICT") || User.IsInRole("Admin") || User.IsInRole("SchoolOwner"))
+                {
+                    <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEditSession('')" value="Add Session" />
+                }
 
                 <div class="table-responsive">
                     @if (ViewBag.Count > 0)
@@ -98,12 +102,12 @@
                                             {
                                                 <td class="text-center">
                                                     <a class="btn btn-primary ms-2"
-                                           onclick="AddEdit('@item.Id')">
+                                                       onclick="AddEdit('@item.Id')">
                                                         Edit
                                                     </a>
 
                                                     <a class="btn btn-danger ms-2"
-                                           onclick="ConfirmDeleteRecord('@item.Id')">
+                                                       onclick="ConfirmDeleteRecord('@item.Id')">
                                                         <i class="fa fa-trash"></i>
                                                     </a>
                                                 </td>

@@ -1,0 +1,59 @@
+﻿
+
+@model IEnumerable<WebUI.DTOs.StudentAssignmentVM>
+
+
+
+    <div class="table-responsive">
+        @if (ViewBag.Count > 0)
+        {
+
+            <table class="table table-hover" id="csAlloc" style="width:100%">
+                <thead class="table-dark text-light">
+                    <tr class="mt-2">
+                        <th>S/N</th>
+                        <th>Matric No</th>
+                        <th>Date Submitted</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int tot = ViewBag.Count;
+                        int i = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr id="row_@item.Id">
+                                <td>
+                                    @if (i <= tot)
+                                    {
+                                        @i
+                                    }
+                                </td>
+                                <td>@item.StudentRegNo</td>
+                                <td>@item.DateSubmitted</td>
+
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+
+            </table>
+
+
+        }
+        else
+        {
+            <div class="alert">
+                <div class="alert alert-info alert-dismissible" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong class="text-info text-center text-uppercase">
+                        no data found - This (may be) because your selected department
+                        session has expired, kindly logout, login and set department session during login.
+                    </strong>
+                </div>
+            </div>
+
+        }
+    </div>

@@ -1,0 +1,420 @@
+﻿@{
+    ViewData["Title"] = "Assignment";
+}
+
+<style>
+
+    .dt-buttons {
+        float: left;
+        margin-bottom: 20px;
+    }
+
+        .dt-buttons .dt-button {
+            background-color: black;
+            color: white;
+        }
+
+    #csAlloc_filter {
+        margin-bottom: 20px;
+        float: right;
+    }
+
+    #csAlloc {
+        background: #fff;
+        padding: 15px;
+        box-shadow: 1px 3px 5px #aaa;
+        border-radius: 5px;
+    }
+
+</style>
+
+<div class="container-fluid position-relative p-0">
+    <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 10px;">
+        <div class="row py-5">
+            <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                <h1 class="display-4 text-white animated zoomIn">Department Course Assignment</h1>
+                <a asp-controller="Home" asp-action="Index" class="h5 text-white">Home</a>
+                <i class="far fa-circle text-white px-2"></i>
+                <a href="" class="h5 text-white">Assignment</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container ">
+        <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+            <h1 class="mb-0">Course Assignment</h1>
+        </div>
+
+        <div class="row g-5">
+
+
+            @if (User.IsInRole("Lecturer"))
+            {
+
+                <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                    <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="AddEditAssignment()" value="New Assignment" />
+                </div>
+
+                <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                    <div class="table-responsive">
+                        @if (ViewBag.Count > 0)
+                        {
+
+                            <table class="table table-hover" id="csAlloc" style="width:100%">
+                                <thead class="table-dark text-light">
+                                    <tr class="mt-2">
+                                        <th>S/N</th>
+                                        <th>Code</th>
+                                        <th>Date</th>
+                                        <th>Questions</th>
+                                        @if (User.IsInRole("Lecturer"))
+                                        {
+                                            <th class="text-center">Operation</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int tot = ViewBag.Count;
+                                        int i = 1;
+                                        foreach (var item in ViewBag.Assignments as List<WebUI.DTOs.AssignmentVM>)
+                                        {
+                                            <tr id="row_@item.Id">
+                                                <td>
+                                                    @if (i <= tot)
+                                                    {
+                                                        @i
+                                                    }
+                                                </td>
+                                                <td>
+
+
+                                                    <a class="ms-2"
+                                                       onclick="SubmittedAssignment('@item.Id')">
+                                                        @item.Code
+                                                    </a>
+                                                </td>
+                                                <td>@item.Date</td>
+                                                <td>
+                                                    <ol>
+                                                        @foreach (var q in item.QuestionList)
+                                                        {
+                                                            <li>@q</li>
+                                                        }
+                                                    </ol>
+                                                </td>
+                                                @if (User.IsInRole("Lecturer"))
+                                                {
+                                                    <td class="text-center">
+
+                                                        <a class="btn btn-danger ms-2"
+                                                           onclick="ConfirmDeleteRecord('@item.Id')">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </td>
+
+                                                }
+                                            </tr>
+                                            i++;
+                                        }
+                                    }
+                                </tbody>
+
+                            </table>
+
+
+                        }
+                        else
+                        {
+                            <div class="alert">
+                                <div class="alert alert-info alert-dismissible" role="alert">
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    <strong class="text-info text-center text-uppercase">
+                                        no data found - This may be because your selected department
+                                        session has expired, kindly logout, login and set department session during login.
+                                    </strong>
+                                </div>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+
+            }
+
+
+
+        </div>
+    </div>
+</div>
+<!-- Features Start -->
+<div class="container-fluid wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container">
+
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="row g-5">
+                    <div class="col-12 wow zoomIn" data-wow-delay="0.2s">
+                        <div class="bg-primary rounded d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fa fa-cubes text-white"></i>
+                        </div>
+                        <h4>Lecturer Assignment</h4>
+                        <p class="mb-0">Lecturer can issue assignment to students on courses that is allocated to him in the currect semester and session.</p>
+                    </div>
+                    <div class="col-12 wow zoomIn" data-wow-delay="0.6s">
+                        <div class="bg-primary rounded d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fa fa-award text-white"></i>
+                        </div>
+                        <h4>Notification</h4>
+                        <p class="mb-0">Each assignment has a code which students can use to access the assignment, it is expected that the lecturer will share the code in related course chat.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4  wow zoomIn" data-wow-delay="0.9s" style="min-height: 350px;">
+                <div class="position-relative h-100">
+                    <img class="position-absolute w-100 h-100 rounded wow zoomIn" data-wow-delay="0.1s" src="~/img/feature.jpg" style="object-fit: cover;">
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row g-5">
+                    <div class="col-12 wow zoomIn" data-wow-delay="0.4s">
+                        <div class="bg-primary rounded d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fa fa-users-cog text-white"></i>
+                        </div>
+                        <h4>Accessing Assignment</h4>
+                        <p class="mb-0">With the shared assignment code students can search for the assignment.</p>
+                    </div>
+                    <div class="col-12 wow zoomIn" data-wow-delay="0.8s">
+                        <div class="bg-primary rounded d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                            <i class="fa fa-phone-alt text-white"></i>
+                        </div>
+                        <h4>Assignment Tip</h4>
+                        <p class="mb-0">One course can have many assignments which can be related to the course outline if need be.</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (User.IsInRole("Student"))
+            {
+
+                <div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+                    <input type="button" class="btn btn-primary fw-bold px-3 fw-bolder mb-3" onclick="GetAssignment()" value="Get Assignment" />
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- Features Start -->
+
+
+<div class="modal fade" id="GetAssignment" tabindex="-1" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Retrieve Assignment
+                </h2>
+            </div>
+            <div class="modal-body" id="getAssignmentModalBody">
+            </div>
+            <div class="modal-footer">
+                <div style="text-align: center; display: none;" id="loaderDiv">
+                    <img src="~/img/load.gif" width="50" height="50" class="img-circle img-thumbnail" />
+                </div>
+                <a href="#" class="btn btn-primary" id="btnCanclexx">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="DeleteModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Delete Record</h1>
+                <button type="button" class="btn-close text-bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+
+
+            <div class="modal-body">
+                <form action="/AssignmentManager/DeleteAssignment" method="get">
+                    <h2 class="text-center text-danger fs-3">ARE YOU SURE YOU WANT TO DELETE RECORD <span id="deleteId"></span>?</h2>
+                    <input type="hidden" name="ID" id="ID" />
+                    <div class="d-grid gap-2 col-md-12 mx-auto">
+                        <input type="submit" class="btn btn-danger" value="Yes Delete" />
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="AddEditModal" tabindex="-1" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Add New Assignment
+                </h2>
+            </div>
+            <div class="modal-body" id="assignmentModalBody">
+            </div>
+            <div class="modal-footer">
+                <div style="text-align: center; display: none;" id="loaderDiv">
+                    <img src="~/img/load.gif" width="50" height="50" class="img-circle img-thumbnail" />
+                </div>
+                <a href="#" class="btn btn-danger" id="btnReset3">Reset</a>
+                <a href="#" class="btn btn-primary" id="btnCancle3">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="SubmittedModal" tabindex="-1" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Students Submitted Assignments
+                </h2>
+            </div>
+            <div class="modal-body" id="submittedModalBody">
+            </div>
+            <div class="modal-footer">
+                <div style="text-align: center; display: none;" id="loaderDiv">
+                    <img src="~/img/load.gif" width="50" height="50" class="img-circle img-thumbnail" />
+                </div>
+                <a href="#" class="btn btn-primary" id="btnCancle4">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="RetrievedAssignmentModal" tabindex="-1" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Retrieved Assignment
+                </h2>
+            </div>
+
+            <div class="modal-body" id="retrievedAssignmentModalBody">
+            </div>
+
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" id="btnCancle5">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalA" tabindex="-1" data-bs-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title text-center text-danger">
+                    Retrieved Assignment
+                </h2>
+            </div>
+            <div class="modal-body" id="aModalBody">
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" id="btnCancle5">Cancle</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $("#loaderDiv1").hide();
+
+            $('#csAlloc').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
+
+
+            $("#btnCanclexx").click(function () {
+                $("#GetAssignment").modal("hide");
+            })
+
+            $("#btnCancle3").click(function () {
+                $("#AddEditModal").modal("hide");
+            })
+
+            $("#btnCancle4").click(function () {
+                $("#SubmittedModal").modal("hide");
+            })
+
+            $("#btnCancle5").click(function () {
+                $("#RetrievedAssignmentModal").modal("hide");
+            })
+
+
+
+        });
+
+
+        var ConfirmDeleteRecord = function (id) {
+            $("#ID").val(id);
+            $("#DeleteModal").modal("show");
+        }
+
+        var AddEditAssignment = function () {
+            var url = "/AssignmentManager/AddEditAssignment"; //USED TO SEARCH ENTITY WITH ID
+
+            $("#assignmentModalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                $("#loaderDiv1d").hide();
+                $("#AddEditModal").modal("show");
+            });
+        }
+
+        var SubmittedAssignment = function (id) {
+            var url = "/AssignmentManager/SubmittedAssignments?ID=" + id; //USED TO SEARCH ENTITY WITH ID
+
+            $("#submittedModalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                $("#SubmittedModal").modal("show");
+            });
+        }
+
+        var GetAssignment = function () {
+            var url = "/AssignmentManager/RetrieveAssignment"; //USED TO SEARCH ENTITY WITH ID
+
+            $("#getAssignmentModalBody").load(url, function () {  // LOAD THE CONTENT FROM THE ACTION /ADDEDITRECORD
+                $("#GetAssignment").modal("show");
+            });
+        }
+
+
+    </script>
+
+}

@@ -1,0 +1,14 @@
+﻿@model WebUI.DTOs.AssignmentVM
+
+<div class=" col-md-12 wow zoomIn" data-wow-delay="0.3s">
+    <p><b>Issued Date:</b> <span style="color:gray">@Model.Date</span> > <b>Submit on:</b> <span style="color:gray">@Model.SubmissionDate</span> </p>
+    <h4>Assignment Code: <span style="color:gray"> @Model.Code</span></h4>
+    <hr />
+    <ol>
+        @foreach (var item in Model.QuestionList)
+        {
+            <li>@item</li>
+        }
+    </ol>
+
+</div>

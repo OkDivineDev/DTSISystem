@@ -3,6 +3,7 @@ using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using ClosedXML.Excel;
 using DataAccessLayer.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -213,14 +214,14 @@ namespace WebUI.Controllers
                         model.Name = obj.Name;
                         model.UserId = obj.UserId;
                     }
-                    return PartialView("EditEmployee", model);
+                    return PartialView("EditLecturer", model);
                 }
             }
             catch (Exception ex)
             {
                 popNotification.Notyf("Fatal Error, please contact admin!");
             }
-            return PartialView("EditEmployee");
+            return PartialView("EditLecturer");
         }
 
         #endregion EDIT EMPLOYEE RECORD
@@ -328,7 +329,22 @@ namespace WebUI.Controllers
 
                                             if (isSaved)
                                             {
-                                                ms = $"{newLec.Name} lecturer record was created succesfully!";
+                                                string m = string.Empty;
+
+                                                var _user = new IdentityUser()
+                                                {
+                                                    Id = oldUser.UserId,
+                                                    Email = oldUser.Email
+                                                };
+                                                
+                                                //  ADD TO LECTURER ROLE
+                                                var lectRole_result = await userManager.AddToRoleAsync(_user, "Lecturer");
+                                                if (lectRole_result.Succeeded)
+                                                {
+                                                    m = " added to Lecturer Role";
+                                                }
+
+                                                ms = $"{newLec.Name} lecturer record was created and {m} succesfully!";
                                                 countDone += 1;
                                             }
                                             else
@@ -381,7 +397,15 @@ namespace WebUI.Controllers
 
                                             if (isSaved)
                                             {
-                                                ms = $"{newLec.Name} user account and lecturer record was created succesfully!";
+                                                string m = string.Empty;
+
+                                                var lectRole_result = await userManager.AddToRoleAsync(newUser, "Lecturer");
+                                                if (lectRole_result.Succeeded)
+                                                {
+                                                    m = " added to Lecturer Role";
+                                                }
+
+                                                ms = $"{newLec.Name} user account and lecturer record was created and lecturer is {m} succesfully!";
                                                 countDone += 1;
                                             }
                                             else
@@ -592,6 +616,7 @@ namespace WebUI.Controllers
                 {
                     DepartmentID = dept.Code,
                     Name = em.Name,
+                    Id = em.Id,
                     Email = users.FirstOrDefault(c => c.UserId == em.UserId).Email,
                     UserId = em.UserId
                 });

@@ -4,7 +4,9 @@ using BusinessLayer.Helpers;
 using BusinessLayer.Interfaces;
 using ClosedXML.Excel;
 using DataAccessLayer.Models;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
 using System.Security.Principal;
@@ -18,10 +20,11 @@ namespace WebUI.Controllers
         private const string v = "Msg";
         private readonly LocalInfrastructure local = new();
 
-    
+
         private readonly IRepository<Department> repoDept;
         private readonly IHttpContextAccessor context;
         private readonly IRepository<Student> repoStd;
+        private readonly UserManager<IdentityUser> userManager;
         private readonly IRepository<AcademicSession> repoAcaSession;
         private readonly IRepository<Lecturer> repoLec;
         private readonly IRepository<Inventory> repoInventory;
@@ -38,6 +41,7 @@ namespace WebUI.Controllers
                                         IRepository<Department> _repoDept,
                                         IHttpContextAccessor _context,
                                         IRepository<Student> _repoStd,
+                                        UserManager<IdentityUser> _userManager,
                                         IRepository<AcademicSession> _repoAcaSession,
                                         IRepository<Lecturer> _repoLec,
                                         IRepository<HyperLink> _repoHyperlink,
@@ -47,6 +51,7 @@ namespace WebUI.Controllers
             repoDept = _repoDept;
             context = _context;
             repoStd = _repoStd;
+            userManager = _userManager;
             repoAcaSession = _repoAcaSession;
             repoLec = _repoLec;
             repoInventory = _repoInventory;
@@ -61,17 +66,13 @@ namespace WebUI.Controllers
         // GET: Department
 
         #region DEPARTMENT CRUD
-
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             try
             {
                 var deptsModel = new List<DepartmentViewModel>();
-
-                // List<Department> departments = new List<Department>();
-
-                //string userId = string.Empty;
 
                 if (User.IsInRole("Admin"))
                 {
@@ -95,7 +96,7 @@ namespace WebUI.Controllers
 
                     ViewBag.DepartmentList = deptsModel;
                 }
-                else
+                else if (User.IsInRole("HOD") || User.IsInRole("Lecturer") || User.IsInRole("DepartmentICT"))
                 {
                     var user = await repoUserInterface.GetByIdAsync(x => x.Email == User.Identity.Name);
 
@@ -129,6 +130,29 @@ namespace WebUI.Controllers
                         TempData[v] = "Oops, I could not find find your employee record!";
                     }
                 }
+                else
+                {
+                    var departments = await repoDept.GetAll();
+                    ViewBag.Count = departments.Count();
+
+                    foreach (var dept in departments)
+                    {
+                        var emp = await repoLec.GetByIdAsync(x => x.UserId == dept.HODUserId);
+
+                        deptsModel.Add(
+                             new DepartmentViewModel()
+                             {
+                                 Name = dept.Name,
+                                 Code = dept.Code,
+                                 HODEmail = dept.HODEmail,
+                                 HODName = emp.Name,
+                                 Id = dept.Id
+                             });
+                    }
+
+                    ViewBag.DepartmentList = deptsModel;
+                }
+
             }
             catch (Exception ex)
             {
@@ -146,6 +170,7 @@ namespace WebUI.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,SchoolOwner")]
         public async Task<JsonResult> Index(DepartmentViewModel model)
         {
             string msg = "";
@@ -185,14 +210,32 @@ namespace WebUI.Controllers
                                         Name = model.HODName
                                     };
 
-                                    repoLec.Add(HodEmp);
+                                    if (repoLec.Add(HodEmp))
+                                    {
+                                        string m = string.Empty;
+
+                                        var _user = new IdentityUser()
+                                        {
+                                            Id = adminUser.UserId,
+                                            Email = adminUser.Email
+                                        };
+
+                                        var lectRole_result = await userManager.AddToRoleAsync(_user, "Lecturer");
+                                        var hodRole_result = await userManager.AddToRoleAsync(_user, "HOD");
+
+                                        if (lectRole_result.Succeeded && hodRole_result.Succeeded)
+                                        {
+                                            m = " added to Lecturer and HOD Role";
+                                        }
+
+                                        msg = $"Department Updated and new HOD is {m} successfully!";
+                                    }
                                 }
-                                msg = "Department Updated successfully!";
                             }
                         }
                         else
                         {
-                            
+
                             Department objDepart = new()
                             {
                                 Name = model.Name,
@@ -211,8 +254,25 @@ namespace WebUI.Controllers
                                 };
                                 if (repoLec.Add(emp))
                                 {
-                                    msg = "Department created and HOD record added to " +
-                                        "employee table, process completed successfully!";
+
+                                    string m = string.Empty;
+
+                                    var _user = new IdentityUser()
+                                    {
+                                        Id = adminUser.UserId,
+                                        Email = adminUser.Email
+                                    };
+
+                                    var lectRole_result = await userManager.AddToRoleAsync(_user, "Lecturer");
+                                    var hodRole_result = await userManager.AddToRoleAsync(_user, "HOD");
+
+                                    if (lectRole_result.Succeeded && hodRole_result.Succeeded)
+                                    {
+                                        m = " added to Lecturer and HOD Role";
+                                    }
+
+                                    msg = "Department created, HOD record added to " +
+                                        $"Lecturer's table and HOD is {m}, process completed successfully!";
                                 }
                                 else
                                     msg = "Department created successfully but HOD was not added " +
@@ -271,7 +331,7 @@ namespace WebUI.Controllers
                     }
                 }
 
-                
+
 
                 return PartialView("AddEditDepartment", model);
             }
@@ -315,7 +375,7 @@ namespace WebUI.Controllers
             return RedirectToAction("Index");
         }
 
-      
+
         #endregion DEPARTMENT CRUD
 
         #region ADMIN UPLOAD STUDENT REGISTRATION NUMBER YEARLY AFTER ADMISSION

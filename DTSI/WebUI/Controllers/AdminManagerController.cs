@@ -8,7 +8,7 @@ using WebUI.ViewModels;
 
 namespace WebUI.Controllers
 {
-    [Authorize(Roles = "SuperAdmin,ICTAdmin")]
+    [Authorize(Roles = "SuperAdmin,ICTAdmin,HOD,Admin,SchoolOwner")]
     public class AdminManagerController : Controller
     {
         private readonly RoleManager<IdentityRole> rolemanager;

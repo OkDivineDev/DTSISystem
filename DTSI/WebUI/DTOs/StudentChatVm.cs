@@ -15,7 +15,7 @@ namespace WebUI.DTOs
         public string OutlineId { get; set; }
 
         [Required(ErrorMessage = "Message is REQUIRED")]
-        [RegularExpression(@"^[\w\-'’“”?/&`(),.0-9\s]+$",
+        [RegularExpression(@"^[\w\-'’“”:;?/&`(),.0-9\s]+$",
          ErrorMessage = "Not in proper format!")]
         public string Message { get; set; }
 
